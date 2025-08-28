@@ -25,7 +25,12 @@ app.get('/', (req, res) => {
     res.send('Welcome to the Hotel Booking API');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// In serverless environments (Vercel), export the app instead of listening here.
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
+export default app;
 
