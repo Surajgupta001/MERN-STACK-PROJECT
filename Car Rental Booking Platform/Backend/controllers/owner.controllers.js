@@ -3,6 +3,7 @@ import Booking from "../models/booking.models.js";
 import Car from "../models/car.models.js";
 import User from "../models/user.models.js";
 import fs from "fs";
+import mongoose from "mongoose";
 
 // Change User Role to Owner
 export const changeRoleToOwner = async (req, res) => {
@@ -178,9 +179,29 @@ export const deleteCar = async (req, res) => {
     try {
         const { _id } = req.user;
         const { carId } = req.body;
+        if (!carId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid carId'
+            });
+        }
         const car = await Car.findById(carId);
 
+        if (!car) {
+            return res.status(404).json({
+                success: false,
+                message: 'Car not found'
+            });
+        }
+
         // Checking is car belong to the user
+        if (!car.owner) {
+            return res.status(400).json({
+                success: false,
+                message: 'Car is already removed or unassigned'
+            });
+        }
+
         if (car.owner.toString() !== _id.toString()){
             return res
             .status(403)
@@ -190,9 +211,7 @@ export const deleteCar = async (req, res) => {
             })
         }
 
-        car.owner = null;
-        car.isAvailable = false;
-        await car.save();
+        await Car.findByIdAndDelete(carId);
 
         return res
             .status(200)
@@ -200,6 +219,7 @@ export const deleteCar = async (req, res) => {
                 success: true,
                 message: 'Car deleted successfully'
             });
+            
     } catch (error) {
         console.error('Delete Car Error:', error);
         return res
@@ -241,7 +261,7 @@ export const getDashboardData = async (req, res) => {
             totalBookings: bookings.length,
             pendingBookings: pendingCount,
             completedBookings: completedCount,
-            recentlyBookings: bookings.slice(0, 5),
+            recentBookings: bookings.slice(0, 5),
             monthlyRevenue
         };
 
@@ -269,27 +289,43 @@ export const getDashboardData = async (req, res) => {
 export const updateUserImage = async (req, res) => {
     try {
         const { _id } = req.user;
+        const imageFile = req.file;
 
-        // Upload image to ImageKit
-        const fileBuffer = imageFile.buffer || fs.readFileSync(imageFile.path);
+        if (!imageFile) {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                message: 'Image file is required (field name: image)'
+            });
+        }
+
+        const fileBuffer = imageFile.buffer || (imageFile.path ? fs.readFileSync(imageFile.path) : null);
+        if (!fileBuffer) {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                message: 'Uploaded file missing buffer/path'
+            });
+        }
+
         const response = await imagekit.upload({
-            file: fileBuffer, //required
-            fileName: imageFile.originalname,   //required
-            folder: "/users"
+            file: fileBuffer,
+            fileName: imageFile.originalname || 'user_image',
+            folder: '/users'
         });
 
-        // Optimization through image URL transformation
-        var optimisedImageUrl = imagekit.url({
+        const optimisedImageUrl = imagekit.url({
             path: response.filePath,
             transformation: [
                 { width: '400' },
-                { quality: 'auto' }, // Auto Compression
-                { format: 'webp' } // Convert to modern format
+                { quality: 'auto' },
+                { format: 'webp' }
             ]
         });
 
         const image = optimisedImageUrl;
-
         await User.findByIdAndUpdate(_id, { image });
 
         return res

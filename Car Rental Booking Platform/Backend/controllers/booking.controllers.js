@@ -1,37 +1,36 @@
 import Booking from "../models/booking.models.js";
 import Car from "../models/car.models.js";
 
-// Function to check Availability of car for a given date
-const checkAvailability = async (req, res) => {
+// Function to check availability of a car for a date range
+const checkAvailability = async (carId, pickupDate, returnDate) => {
     const bookings = await Booking.find({
-        car,
-        pickupDate: { $lte: returnDate },
-        returnDate: { $gte: pickupDate },
+        car: carId,
+        pickupDate: { $lte: new Date(returnDate) },
+        returnDate: { $gte: new Date(pickupDate) },
     });
-
     return bookings.length === 0;
 };
 
 // API to check availability of cars for the given date and location
 export const checkAvailabilityOfCars = async (req, res) => {
     try {
-        const { carId, pickupDate, returnDate } = req.body;
+        const { location, pickupDate, returnDate } = req.body;
+        if (!location || !pickupDate || !returnDate) {
+            return res.status(400).json({
+                success: false,
+                message: 'location, pickupDate and returnDate are required'
+            });
+        }
 
-        // Fetch all available cars for the given location
-        const cars = await Car.find({location, isAvailable: true});
-
-        // Check availability for the given date range using promise
+        const cars = await Car.find({ location, isAvailable: true });
         const availableCarspromise = cars.map(async (car) => {
             const isAvailable = await checkAvailability(car._id, pickupDate, returnDate);
-            return { ...car._doc, isAvailable: isAvailable };
+            return isAvailable ? car : null;
         });
+        const results = await Promise.all(availableCarspromise);
+        const availableCars = results.filter(Boolean);
 
-        let availableCars = await Promise.all(availableCarspromise);
-        availableCars = availableCars.filter(car => car.isAvailable === true);
-
-        res
-        .status(200)
-        .json({
+        res.status(200).json({
             success: true,
             message: 'Available cars fetched successfully',
             availableCars
@@ -39,9 +38,7 @@ export const checkAvailabilityOfCars = async (req, res) => {
 
     } catch (error) {
         console.error('Check Availability Error:', error);
-        return res
-        .status(500)
-        .json({
+        return res.status(500).json({
             success: false,
             message: 'Error fetching available cars',
             error: error.message
@@ -54,6 +51,13 @@ export const createBooking = async (req, res) => {
     try {
         const { _id } = req.user;
         const { car, pickupDate, returnDate } = req.body;
+
+        if (!car || !pickupDate || !returnDate) {
+            return res.status(400).json({
+                success: false,
+                message: 'car, pickupDate and returnDate are required'
+            });
+        }
 
         const isAvailable = await checkAvailability(car, pickupDate, returnDate);
 
@@ -72,7 +76,7 @@ export const createBooking = async (req, res) => {
         const picked = new Date(pickupDate);
         const returned = new Date(returnDate);
         const noOfDays = Math.ceil((returned - picked) / (1000 * 60 * 60 * 24));
-        const price = noOfDays * carData.rentPerDay;
+        const price = noOfDays * carData.pricePerDay;
 
         await Booking.create({
             car,

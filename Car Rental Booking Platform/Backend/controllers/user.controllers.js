@@ -1,6 +1,7 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Car from "../models/car.models.js";
 
 // Generate JWT Token
 const generateToken = (userId) => {
@@ -131,5 +132,28 @@ export const getUserData = async (req, res) => {
             message: 'Internal server error',
             error: error.message
         });
+    }
+};
+
+// Get all Cars for the Frontend
+export const getCars = async (req, res) => {
+    try {
+        const cars = await Car.find({ isAvailable: true })
+        return res
+        .status(200)
+        .json({
+            success: true,
+            message: 'Cars fetched successfully',
+            cars
+        })
+    } catch (error) {
+        console.error('Get Cars Error:', error);
+        return res
+        .status(500)
+        .json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        })
     }
 };
