@@ -4,29 +4,50 @@ import { assets } from '../assets/assets'
 import CarCard from './CarCard'
 import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
+import { motion } from 'motion/react'
 
 function FeaturedSection() {
 
     const navigate = useNavigate();
     const { cars } = useAppContext();
-    
+
     return (
-        <div className='flex flex-col items-center px-6 py-24 md:px-16 lg:px-24 xl:px-32'>
-            <div>
+        <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className='flex flex-col items-center px-6 py-24 md:px-16 lg:px-24 xl:px-32'>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.5 }}
+            >
                 <Title title='Featured Vehicles' subtitle='Explore our selection of premium vehicles available for your next adventure' />
-            </div>
-            <div className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 mt-18'>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className='grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 mt-18'>
                 {cars.slice(0, 6).map((car) => (
-                    <div key={car._id}>
+                    <motion.div key={car._id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                    >
                         <CarCard car={car} />
-                    </div>
+                    </motion.div>
                 ))}
-            </div>
-            <button onClick={() => navigate('/cars')} className='flex items-center justify-center gap-2 px-6 py-2 border rounded-md cursor-pointer mt-18 border-borderColor hover:bg-gray-50'>
+            </motion.div>
+            <motion.button 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+            onClick={() => navigate('/cars')} className='flex items-center justify-center gap-2 px-6 py-2 border rounded-md cursor-pointer mt-18 border-borderColor hover:bg-gray-50'>
                 Explore all Vehicles
                 <img src={assets.arrow_icon} alt="" />
-            </button>
-        </div>
+            </motion.button>
+        </motion.div>
     )
 }
 

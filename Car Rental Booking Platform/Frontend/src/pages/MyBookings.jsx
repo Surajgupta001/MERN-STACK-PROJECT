@@ -3,17 +3,18 @@ import { assets } from '../assets/assets';
 import Title from '../components/Title';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
+import { motion } from 'motion/react';
 
 function MyBookings() {
 
     const { axios, user, currency } = useAppContext();
 
     const [bookings, setBookings] = useState([]);
-    
+
     const fetchMyBookings = async () => {
         try {
             const { data } = await axios.get('/api/bookings/user');
-            if(data.success){
+            if (data.success) {
                 setBookings(data.bookings);
             } else {
                 toast.error(data.message);
@@ -29,11 +30,19 @@ function MyBookings() {
     }, [user]);
 
     return (
-        <div className='mt-16 text-sm x-6 md:px-16 lg:px-24 xl:px-32 2xl:px-38 max-w-7xl'>
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className='mt-16 text-sm x-6 md:px-16 lg:px-24 xl:px-32 2xl:px-38 max-w-7xl'>
             <Title title='My Bookings' subtitle='Manage your car rental bookings' align='left' />
             <div>
                 {bookings.map((booking, index) => (
-                    <div key={booking._id} className='grid grid-cols-1 gap-6 p-6 mt-5 border rounded-lg md:grid-cols-4 border-borderColor first:mt-12'>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        key={booking._id} className='grid grid-cols-1 gap-6 p-6 mt-5 border rounded-lg md:grid-cols-4 border-borderColor first:mt-12'>
                         {/* Car Image + info */}
                         <div className='md:col-span-1'>
                             <div className='mb-3 overflow-hidden rounded-md'>
@@ -71,10 +80,10 @@ function MyBookings() {
                                 <p>Booked on {booking.createdAt.split('T')[0]}</p>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
-        </div>
+        </motion.div>
     )
 }
 

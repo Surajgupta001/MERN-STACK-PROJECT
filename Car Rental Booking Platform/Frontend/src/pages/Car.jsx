@@ -5,6 +5,7 @@ import CarCard from '../components/CarCard';
 import { useSearchParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
+import { motion } from 'motion/react';
 
 function Car() {
 
@@ -24,19 +25,19 @@ function Car() {
     const [filterCars, setFilterCars] = useState([]);
 
     const applyFilter = async () => {
-        if(input === ''){
+        if (input === '') {
             setFilterCars(cars);
             return null;
         }
 
         const filtered = cars.slice().filter((car) => {
             return car.brand.toLowerCase().includes(input.toLowerCase()) ||
-                   car.model.toLowerCase().includes(input.toLowerCase()) ||
-                   car.fuel_type.toLowerCase().includes(input.toLowerCase()) ||
-                   car.transmission.toLowerCase().includes(input.toLowerCase()) ||
-                   car.category.toLowerCase().includes(input.toLowerCase()) ||
-                   car.location.toLowerCase().includes(input.toLowerCase()) ||
-                   car.seating_capacity.toString().toLowerCase().includes(input.toLowerCase());
+                car.model.toLowerCase().includes(input.toLowerCase()) ||
+                car.fuel_type.toLowerCase().includes(input.toLowerCase()) ||
+                car.transmission.toLowerCase().includes(input.toLowerCase()) ||
+                car.category.toLowerCase().includes(input.toLowerCase()) ||
+                car.location.toLowerCase().includes(input.toLowerCase()) ||
+                car.seating_capacity.toString().toLowerCase().includes(input.toLowerCase());
         });
         setFilterCars(filtered);
     };
@@ -48,9 +49,9 @@ function Car() {
             returnDate
         });
 
-        if(data.success){
+        if (data.success) {
             setFilterCars(data.availableCars);
-            if(data.availableCars.length === 0){
+            if (data.availableCars.length === 0) {
                 toast.error('No cars available');
             }
             return null;
@@ -67,24 +68,40 @@ function Car() {
 
     return (
         <div>
-            <div className='flex flex-col items-center py-20 bg-light max-md:px-24'>
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className='flex flex-col items-center py-20 bg-light max-md:px-24'>
                 <Title title='Available Cars' subtitle='Browse our selection of cars available for rent' />
-                <div className='flex items-center w-full h-12 px-4 mt-6 bg-white rounded-full shadow max-w-140'>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className='flex items-center w-full h-12 px-4 mt-6 bg-white rounded-full shadow max-w-140'>
                     <img src={assets.search_icon} alt="" className='w-4.5 h-4.5 mr-2' />
                     <input onChange={(e) => setInput(e.target.value)} value={input} type="text" placeholder='Search by make, or features' className='w-full h-full text-gray-500 outline-none' />
                     <img src={assets.filter_icon} alt="" className='w-4.5 h-4.5 ml-2' />
-                </div>
-            </div>
-            <div className='px-6 mt-10 md:px-16 lg:px-24 xl:px-32'>
+                </motion.div>
+            </motion.div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className='px-6 mt-10 md:px-16 lg:px-24 xl:px-32'>
                 <p>Showing {filterCars.length} Cars</p>
                 <div className='grid grid-cols-1 gap-8 mx-auto mt-4 sm:grid-cols-2 lg:grid-cols-3 xl:px-20 max-w-7xl'>
                     {filterCars.map((car, index) => (
-                        <div key={index}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.1 * index }}
+                            key={index}>
                             <CarCard car={car} />
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
         </div>
     )
 }

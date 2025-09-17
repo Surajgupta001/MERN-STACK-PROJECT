@@ -1,6 +1,7 @@
 import React from 'react'
 import Title from './Title'
 import { assets } from '../assets/assets';
+import { motion } from 'framer-motion';
 
 function Testimonial() {
 
@@ -27,7 +28,12 @@ function Testimonial() {
             <Title title='What Our Customers Say' subtitle='Discover why discerning travelers choose stayVenture for their luxury accommodations around the world.' />
             <div className="grid grid-cols-1 gap-8 mt-18 sm:grid-cols-2 lg:grid-cols-3">
                 {testimonials.map((testimonial, index) => (
-                    <div key={index} className="p-6 bg-white shadow-lg rounded-xl hover:-translate-y-1">
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.2, ease: "easeOut" }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        key={index} className="p-6 bg-white shadow-lg rounded-xl hover:-translate-y-1">
                         <div className="flex items-center gap-3 transition-all duration-500">
                             <img className="w-12 h-12 rounded-full" src={testimonial.image} alt={testimonial.name} />
                             <div>
@@ -41,7 +47,7 @@ function Testimonial() {
                             ))}
                         </div>
                         <p className="mt-4 font-light text-gray-500 max-w-90">{testimonial.testimonial}</p>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </div>

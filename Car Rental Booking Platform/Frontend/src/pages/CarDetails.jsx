@@ -4,6 +4,7 @@ import { assets } from '../assets/assets';
 import Loader from '../components/Loader';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
+import { motion } from 'motion/react';
 
 function CarDetails() {
 
@@ -30,7 +31,7 @@ function CarDetails() {
                 pickupDate: pickupdate,
                 returnDate: returndate
             });
-            if(data.success){
+            if (data.success) {
                 toast.success(data.message);
                 navigate('/my-bookings');
             } else {
@@ -54,9 +55,21 @@ function CarDetails() {
             </button>
             <div className='grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-12'>
                 {/* Left: cars image & Details */}
-                <div className='lg:col-span-2'>
-                    <img src={car.image} alt="" className='object-cover w-full h-auto mb-6 shadow-md rounded-xl md:max-h-100' />
-                    <div className='space-y-6'>
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className='lg:col-span-2'>
+                    <motion.img
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        src={car.image} alt="" className='object-cover w-full h-auto mb-6 shadow-md rounded-xl md:max-h-100' />
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className='space-y-6'>
                         <div>
                             <h1 className='text-3xl font-bold'>{car.name} {car.model}</h1>
                             <p className='text-lg text-gray-500'>{car.category} • {car.year}</p>
@@ -69,10 +82,14 @@ function CarDetails() {
                                 { icon: assets.car_icon, text: car.transmission },
                                 { icon: assets.location_icon, text: car.location }
                             ].map(({ icon, text }) => (
-                                <div key={text} className='flex flex-col items-center p-4 rounded-lg bg-light'>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.4 }}
+                                    key={text} className='flex flex-col items-center p-4 rounded-lg bg-light'>
                                     <img src={icon} alt="" className='h-5 mb-2' />
                                     {text}
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                         {/* Descriptions */}
@@ -94,10 +111,14 @@ function CarDetails() {
                                 }
                             </ul>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
                 {/* Right: Booking Forms */}
-                <form onSubmit={handleSubmit} className='sticky p-6 space-y-6 text-gray-500 shadow-lg h-max top-18 rounded-xl'>
+                <motion.form
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    onSubmit={handleSubmit} className='sticky p-6 space-y-6 text-gray-500 shadow-lg h-max top-18 rounded-xl'>
                     <p className='flex items-center justify-between text-2xl font-semibold text-gray-800'>{currency}{car.pricePerDay}<span className='text-base font-normal text-gray-400'> per day</span></p>
                     <hr className='my-6 border-borderColor' />
                     <div className='flex flex-col gap-2'>
@@ -110,7 +131,7 @@ function CarDetails() {
                     </div>
                     <button className='w-full py-3 font-medium text-white transition-all cursor-pointer bg-primary hover:bg-primary-dull rounded-xl'>Book Now</button>
                     <p className='text-sm text-center'>No, credit card required to reserved</p>
-                </form>
+                </motion.form>
             </div>
         </div>
     ) : (
