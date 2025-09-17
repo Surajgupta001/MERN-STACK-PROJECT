@@ -1,6 +1,6 @@
 # MERN Stack Projects Collection
 
-This repository contains a collection of 5 full-stack web applications built using the MERN stack (MongoDB, Express.js, React, Node.js) along with various additional frameworks and libraries. Each project demonstrates different features and use cases of modern web development.
+This repository contains a collection of 6 full-stack web applications built using the MERN stack (MongoDB, Express.js, React, Node.js) along with various additional frameworks and libraries. Each project demonstrates different features and use cases of modern web development.
 
 ## 📋 Project Overview
 
@@ -205,6 +205,44 @@ This repository contains a collection of 5 full-stack web applications built usi
 - **Notifications:** React Toastify
 - **Development Tools:** ESLint, Vite plugins
 
+### 6. Car Rental Booking Platform
+
+**Overview:** A modern car rental platform enabling users to search cars by location and date range, view car details, and make bookings. Owners can add and manage cars, toggle availability, and process bookings by changing status (pending, confirmed, canceled). The system features robust authentication, image uploads via CDN, and availability checks to prevent overlapping bookings.
+
+**Key Features:**
+
+- Search cars by location with date-range availability
+- Car details with pricing computed by `pricePerDay`
+- Secure booking flow with conflict prevention
+- Owner dashboard: add, list, delete cars; manage availability
+- Booking management: view bookings and update status
+- JWT-based auth with Bearer headers
+- Image uploads using memory storage to CDN
+- Responsive UI and helpful notifications
+
+**Backend Technologies:**
+
+- **Framework:** Node.js with Express.js
+- **Database:** MongoDB with Mongoose ODM
+- **Authentication:** JSON Web Tokens (JWT)
+- **File Upload:** Multer (memoryStorage) + CDN (ImageKit)
+- **Validation/Utilities:** Date range overlap checks
+- **Other Libraries:** CORS, Dotenv, Nodemon
+
+**Frontend Technologies:**
+
+- **Framework:** React 19 with Vite build tool
+- **Styling:** TailwindCSS v4
+- **Routing:** React Router DOM
+- **HTTP Client:** Axios with global Bearer token header
+- **Notifications:** React Hot Toast
+- **State:** Context API for auth + axios instance
+
+For setup and detailed docs, see:
+
+- `Car Rental Booking Platform/Backend/Readme.md`
+- `Car Rental Booking Platform/Frontend/README.md`
+
 ## 🚀 Common Technologies Across Projects
 
 ### Backend (Shared Across All Projects)
@@ -241,6 +279,9 @@ MERN STACK PROJECT/
 │   └── Frontend/
 ├── Doctor Appointment Booking System/
 │   ├── Admin/
+│   ├── Backend/
+│   └── Frontend/
+├── Car Rental Booking Platform/
 │   ├── Backend/
 │   └── Frontend/
 └── E-commerce Website/
@@ -365,4 +406,4 @@ Thank you for contributing to MERN Stack Projects Collection! 🎉
 
 **Author:** Suraj Gupta
 **Repository:** MERN-STACK-PROJECT
-**Date:** August 29, 2025
+**Date:** September 17, 2025
