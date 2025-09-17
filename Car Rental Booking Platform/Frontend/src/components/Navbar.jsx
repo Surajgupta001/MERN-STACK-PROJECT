@@ -1,12 +1,29 @@
 import React, { useState } from 'react'
 import { assets, menuLinks } from '../assets/assets'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAppContext } from '../context/AppContext';
+import toast from 'react-hot-toast';
 
-function Navbar({ setShowLogin }) {
+function Navbar() {
 
+    const { setShowLogin, user, logout, isOwner, axios, setIsOwner } = useAppContext();
+    
     const location = useLocation();
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+
+    const changeRole = async () => {
+        try {
+            const { data } = await axios.post('/api/owners/change-role');
+            if(data.success){
+                setIsOwner(true);
+                toast.success(data.message);
+            }
+        } catch (error) {
+            console.error("Error changing role:", error);
+            toast.error("Failed to change role.");
+        }
+    };
 
     return (
         <div className={`flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 text-gray-600 border-b border-borderColor relative transition-all ${location.pathname === '/' && 'bg-light'}`}>
@@ -24,8 +41,8 @@ function Navbar({ setShowLogin }) {
                     <img src={assets.search_icon} alt="search" />
                 </div>
                 <div className='flex items-start gap-6 max-sm:flex-col sm:items-center'>
-                    <button onClick={() => navigate('/owner')} className='cursor-pointer'>Dashboard</button>
-                    <button onClick={() => setShowLogin(true)} className='px-8 py-2 text-white transition-all rounded-md cursor-pointer bg-primary hover:bg-primary-dull'>Login</button>
+                    <button onClick={() => isOwner ? navigate('/owner') : changeRole()} className='cursor-pointer'>{isOwner ? 'Dashboard' : 'List cars'}</button>
+                    <button onClick={() => {user ? logout() : setShowLogin(true)}} className='px-8 py-2 text-white transition-all rounded-md cursor-pointer bg-primary hover:bg-primary-dull'>{user ? 'Logout' : 'Login'}</button>
                 </div>
             </div>
             <button onClick={() => setOpen(!open)} className='cursor-pointer sm:hidden' aria-label='Menu'>

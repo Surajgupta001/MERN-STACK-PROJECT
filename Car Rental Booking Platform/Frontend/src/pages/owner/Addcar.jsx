@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import Title from '../../components/owner/Title';
 import { assets } from '../../assets/assets';
+import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
 
 function Addcar() {
 
-  const currency = import.meta.env.VITE_CURRENCY;
+  const { axios, currency } = useAppContext();
 
+  const [isLoading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [car, setCar] = useState({
     brand: '',
@@ -20,10 +23,47 @@ function Addcar() {
     description: ''
   });
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
+    if (isLoading) return null;
+    setLoading(true);
 
+    try {
+      if (!image) {
+        toast.error('Please upload a car image.');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', image);
+      formData.append('carData', JSON.stringify(car));
+
+      const { data } = await axios.post('/api/owners/add-car', formData);
+      if (data && data.success) {
+        toast.success(data.message);
+        setImage(null);
+        setCar({
+          brand: '',
+          model: '',
+          year: 0,
+          pricePerDay: 0,
+          category: '',
+          transmission: '',
+          fuel_type: '',
+          seating_capacity: 0,
+          location: '',
+          description: ''
+        })
+      } else {
+        toast.error((data && data.message) || 'Failed to add car.');
+      }
+    } catch (error) {
+      console.error("Error adding car:", error);
+      const msg = error?.response?.data?.message || error.message || 'Failed to add car. Please try again.';
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -115,7 +155,7 @@ function Addcar() {
         </div>
         <button className='flex items-center gap-2 px-4 py-2.5 mt-4 bg-primary text-white rounded-md font-medium w-max cursor-pointer'>
           <img src={assets.tick_icon} alt="" />
-          List Your Car
+          {isLoading ? "Loading..." : "List Your Car"}
         </button>
       </form>
     </div>

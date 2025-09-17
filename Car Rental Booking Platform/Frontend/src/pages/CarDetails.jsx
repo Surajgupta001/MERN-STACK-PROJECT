@@ -1,24 +1,50 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { assets, dummyCarData } from '../assets/assets';
+import { useParams } from 'react-router-dom'
+import { assets } from '../assets/assets';
 import Loader from '../components/Loader';
+import { useAppContext } from '../context/AppContext';
+import toast from 'react-hot-toast';
 
 function CarDetails() {
 
     const { id } = useParams();
-    const navigate = useNavigate();
-    const currency = import.meta.env.VITE_CURRENCY;
+    const { cars, axios, pickupdate, setPickupDate, returndate, setReturnDate, navigate, currency } = useAppContext();
 
     const [car, setCar] = useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
+        if (!pickupdate || !returndate) {
+            toast.error('Please select pickup and return dates.');
+            return;
+        }
+        const pick = new Date(pickupdate);
+        const ret = new Date(returndate);
+        if (isNaN(pick) || isNaN(ret) || ret <= pick) {
+            toast.error('Return date must be after pickup date.');
+            return;
+        }
+        try {
+            const { data } = await axios.post('/api/bookings/create', {
+                car: id,
+                pickupDate: pickupdate,
+                returnDate: returndate
+            });
+            if(data.success){
+                toast.success(data.message);
+                navigate('/my-bookings');
+            } else {
+                toast.error(data.message || 'Failed to create booking.');
+            }
+        } catch (error) {
+            console.error("Error creating booking:", error);
+            toast.error(error?.response?.data?.message || "Failed to create booking.");
+        }
     };
 
     useEffect(() => {
-        setCar(dummyCarData.find((car) => car._id === id));
-    }, [id]);
+        setCar(cars.find((car) => car._id === id));
+    }, [cars, id]);
 
     return car ? (
         <div className='px-6 mt-16 md:px-16 lg:px-24 xl:px-32'>
@@ -76,11 +102,11 @@ function CarDetails() {
                     <hr className='my-6 border-borderColor' />
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="pickup-date">Pickup Date</label>
-                        <input type="date" id="pickup-date" min={new Date().toISOString().split('T')[0]} className='px-3 py-2 border rounded-lg border-borderColor' required />
+                        <input onChange={(e) => setPickupDate(e.target.value)} value={pickupdate} type="date" id="pickup-date" min={new Date().toISOString().split('T')[0]} className='px-3 py-2 border rounded-lg border-borderColor' required />
                     </div>
                     <div className='flex flex-col gap-2'>
                         <label htmlFor="return-date">Return Date</label>
-                        <input type="date" id="return-date" className='px-3 py-2 border rounded-lg border-borderColor' required />
+                        <input onChange={(e) => setReturnDate(e.target.value)} value={returndate} type="date" id="return-date" min={pickupdate} className='px-3 py-2 border rounded-lg border-borderColor' required />
                     </div>
                     <button className='w-full py-3 font-medium text-white transition-all cursor-pointer bg-primary hover:bg-primary-dull rounded-xl'>Book Now</button>
                     <p className='text-sm text-center'>No, credit card required to reserved</p>
