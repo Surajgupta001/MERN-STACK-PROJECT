@@ -26,6 +26,12 @@ app.use("/api/inngest", serve({
 
 const port = process.env.PORT || 8000;
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+// Export the app for Vercel serverless entry
+export default app;
+
+// Run the listener only when not in Vercel serverless environment
+if (!process.env.VERCEL) {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
