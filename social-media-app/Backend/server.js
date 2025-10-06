@@ -8,10 +8,8 @@ import { serve } from "inngest/express";
 // App config
 const app = express();
 
-// Database config (wait for initial connection on cold start)
-await connectDB().catch(err => {
-    console.error('Failed initial DB connection:', err.message);
-});
+// Database config
+await connectDB();
 
 // Middlewares
 app.use(express.json());
