@@ -1,4 +1,3 @@
-import { response } from "express";
 import imageKit from "../config/imageKit.js";
 import User from "../models/user.models.js";
 import fs from 'fs';
@@ -7,18 +6,18 @@ import fs from 'fs';
 export const getUserData = async (req, res) => {
     try {
         
-        const { userId } = await req.auth();
-        
-        const user = await User.findById(userId);
-        
-        if (!user) {
-            return res
-            .status(404)
-            .json({
-                success: false,
-                message: 'User not found'
-            });
+        const authData = typeof req.auth === 'function' ? await req.auth() : {};
+        const userId = authData?.userId || authData?.user_id || req.user?.id || req.params.userId || req.query.userId;
+        if (!userId) {
+            return res.status(401).json({ success: false, message: 'Unauthorized: userId not found' });
         }
+
+        const user = await User.findById(userId).lean();
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        return res.status(200).json({ success: true, user });
 
     } catch (error) {
         console.error('Error getting user data:', error);
@@ -36,31 +35,18 @@ export const updateUserData = async (req, res) => {
     try {
         
         const { userId } = await req.auth();
-        
-        const { username, full_name, bio, location } = req.body;
-        
+        let { username, full_name, bio, location } = req.body || {};
         const tempUser = await User.findById(userId);
-        
-        !username && (username = tempUser.username);
-
+        if (!tempUser) return res.status(404).json({ success: false, message: 'User not found' });
+        if (!username) username = tempUser.username;
         if (username !== tempUser.username) {
-            const user = await User.findOne({ username });
-
-            if (user) {
-                // We will not change the username if it is already taken
-                username = tempUser.username;
-            }
+            const userWithSame = await User.findOne({ username });
+            if (userWithSame) username = tempUser.username; // keep existing
         }
+        const updatedData = { username, full_name, bio, location };
 
-        const updatedData = {
-            username,
-            full_name,
-            bio,
-            location
-        };
-
-        const profile = req.files.profile && req.files.profile[0];
-        const cover = req.files.cover && req.files.cover[0];
+    const profile = req.files?.profile?.[0];
+    const cover = req.files?.cover?.[0];
 
         if (profile) {
             const buffer = fs.readFileSync(profile.path);
@@ -97,7 +83,8 @@ export const updateUserData = async (req, res) => {
                 ]
             });
 
-            updatedData.cover_picture = url;
+            // Schema field is cover_photo
+            updatedData.cover_photo = url;
         }
 
         const user = await User.findByIdAndUpdate(
@@ -131,7 +118,10 @@ export const discoverUsers = async (req, res) => {
         
         const { userId } = await req.auth();
 
-        const { input } = await req.body;
+        const { input } = req.body || {};
+        if (!input || !input.trim()) {
+            return res.status(200).json({ success: true, users: [], message: 'No input provided' });
+        }
 
         const allUsers = await User.find({
             $or: [
@@ -169,7 +159,8 @@ export const followUser = async (req, res) => {
         
         const { userId } = await req.auth();
 
-        const { id } = await req.body;
+    const { id } = req.body || {};
+    if (!id) return res.status(400).json({ success: false, message: 'Target user id required' });
 
         const user = await User.findById(userId);
 
@@ -214,7 +205,8 @@ export const unfollowUser = async (req, res) => {
         
         const { userId } = await req.auth();
 
-        const { id } = await req.body;
+    const { id } = req.body || {};
+    if (!id) return res.status(400).json({ success: false, message: 'Target user id required' });
 
         const user = await User.findById(userId);
 
