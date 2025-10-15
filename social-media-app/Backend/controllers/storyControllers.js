@@ -7,8 +7,8 @@ import { inngest } from "../inngest/index.js";
 // Add User Story
 export const addUserStory = async (req, res) => {
     try {
-        const { userId } = req.auth();
-        const { content, media_type, background_color } = req.body;
+    const { userId } = req.auth();
+    const { content, media_type, background_color, background } = req.body;
         const media = req.file;
         let media_url = '';
 
@@ -28,7 +28,7 @@ export const addUserStory = async (req, res) => {
             content,
             media_url,
             media_type,
-            background_color
+            background_color: background_color || background
         })
 
         // Schedule story deletion after 24 hours using Inngest
