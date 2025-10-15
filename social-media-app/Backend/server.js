@@ -26,10 +26,10 @@ app.get('/', (req, res) => {
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
 // Import and use routes
-app.use('/api/users', userRouter);
-app.use('/api/posts', postRouter);
-app.use('/api/stories', storyRouter);
-app.use('/api/messages', messageRouter);
+app.use('/api/user', userRouter);
+app.use('/api/post', postRouter);
+app.use('/api/story', storyRouter);
+app.use('/api/message', messageRouter);
 
 const port = process.env.PORT || 5000;
 
