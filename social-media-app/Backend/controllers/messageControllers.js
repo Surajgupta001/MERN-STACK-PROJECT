@@ -33,7 +33,7 @@ export const sseController = (req, res) => {
 // Send Message
 export const sendMessage = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = await req.auth();
         const { to_user_id, text } = req.body;
         const image = req.file;
 
@@ -93,7 +93,7 @@ export const sendMessage = async (req, res) => {
 // Get Chat Messages
 export const getChatMessages = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = await req.auth();
         const { to_user_id } = req.body;
         
         const messages = await Message.find({
@@ -103,12 +103,15 @@ export const getChatMessages = async (req, res) => {
             ]
         }).sort({ createdAt: 1 })
 
-        // Mark messages as seen
-        await Message.updateMany({
-            from_user_id: to_user_id,
-            to_user_id: userId,
-            seen: true
-        });
+        // Mark messages as seen (only those currently unseen)
+        await Message.updateMany(
+            {
+                from_user_id: to_user_id,
+                to_user_id: userId,
+                seen: false
+            },
+            { $set: { seen: true } }
+        );
 
         res
         .status(200)
@@ -131,7 +134,7 @@ export const getChatMessages = async (req, res) => {
 
 export const getUserRecentMessages = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = await req.auth();
         const messages = await Message.find({
             to_user_id: userId
         }).populate('from_user_id to_user_id').sort({ createdAt: -1 });
