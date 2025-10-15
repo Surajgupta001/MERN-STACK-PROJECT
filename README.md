@@ -1,10 +1,12 @@
 # MERN Stack Projects Collection
 
-This repository contains a collection of 6 full-stack web applications built using the MERN stack (MongoDB, Express.js, React, Node.js) along with various additional frameworks and libraries. Each project demonstrates different features and use cases of modern web development.
+This monorepo contains multiple full‑stack web applications built with the MERN stack (MongoDB, Express.js, React, Node.js). Each project focuses on different real‑world features (auth, payments, background jobs, real‑time messaging, admin dashboards, etc.).
 
 ## 📋 Project Overview
 
-### 1. AI Powered Blog App
+> Tip: Each project has its own Backend and Frontend folders with a dedicated README. Use the Quickstart section below to run any app locally on Windows.
+
+### 1) AI Powered Blog App (`AI Powered Blog App/`)
 
 **Overview:** A comprehensive blogging platform that leverages AI technology to help users create engaging content. The application features an intuitive rich text editor, AI-powered content generation, automatic image optimization, and a modern, responsive design. Users can create, edit, and publish blog posts with AI assistance for content ideas and image management.
 
@@ -41,7 +43,9 @@ This repository contains a collection of 6 full-stack web applications built usi
 - **Notifications:** React Hot Toast
 - **Development Tools:** ESLint, Vite plugins
 
-### 2. AI Background Removal
+Docs: `AI Powered Blog App/Backend/Readme.md`, `AI Powered Blog App/Frontend/README.md`
+
+### 2) AI Background Removal (`AI_BG_Removal/`)
 
 **Overview:** An innovative web application that utilizes advanced AI algorithms to automatically remove backgrounds from images with professional precision. The platform offers a seamless user experience with secure payment processing, allowing users to purchase credits for image processing. Built with modern web technologies, it provides fast, reliable background removal services with user authentication and transaction management.
 
@@ -77,7 +81,9 @@ This repository contains a collection of 6 full-stack web applications built usi
 - **Notifications:** React Toastify
 - **Development Tools:** ESLint, PostCSS, Autoprefixer
 
-### 3. Chat App
+Docs: `AI_BG_Removal/Backend/README.md` (if present) and `AI_BG_Removal/Frontend/README.md`
+
+### 3) Chat App (`Chat App/`)
 
 **Overview:** A real-time chat application built with modern web technologies that enables instant messaging between users. The platform features secure user authentication, cloud-based image storage, and responsive design for seamless communication across devices. It provides a complete chat experience with message history, user management, and real-time updates using WebSocket technology.
 
@@ -112,7 +118,9 @@ This repository contains a collection of 6 full-stack web applications built usi
 - **Notifications:** React Hot Toast
 - **Development Tools:** ESLint, Vite plugins
 
-### 4. Doctor Appointment Booking System
+Docs: `Chat App/Backend/Readme.md`, `Chat App/Frontend/README.md`
+
+### 4) Doctor Appointment Booking System (`Doctor Appointment Booking System/`)
 
 **Overview:** A comprehensive healthcare management system designed to streamline the process of booking medical appointments. The platform connects patients with healthcare providers through an intuitive interface, featuring appointment scheduling, doctor profiles, payment processing, and administrative oversight. Built with scalability in mind, it includes separate admin and patient portals for efficient healthcare management.
 
@@ -158,7 +166,9 @@ This repository contains a collection of 6 full-stack web applications built usi
 - **Notifications:** React Toastify
 - **Development Tools:** ESLint, PostCSS, Autoprefixer
 
-### 5. E-commerce Website
+Docs: `Doctor Appointment Booking System/Backend/README.md`, `Doctor Appointment Booking System/Frontend/README.md`, `Doctor Appointment Booking System/Admin/README.md`
+
+### 5) E-commerce Website (`E-commerce Website/`)
 
 **Overview:** A full-featured e-commerce platform that provides a complete online shopping experience with product management, shopping cart functionality, secure payment processing, and comprehensive admin dashboard. The platform supports multiple payment gateways, user authentication, product categorization, order management, and inventory tracking. Built with modern web technologies, it offers a seamless shopping experience for customers and powerful management tools for administrators.
 
@@ -205,7 +215,9 @@ This repository contains a collection of 6 full-stack web applications built usi
 - **Notifications:** React Toastify
 - **Development Tools:** ESLint, Vite plugins
 
-### 6. Car Rental Booking Platform
+Docs: `E-commerce Website/Backend/README.md`, `E-commerce Website/Frontend/README.md`, `E-commerce Website/Admin/README.md`
+
+### 6) Car Rental Booking Platform (`Car Rental Booking Platform/`)
 
 **Overview:** A modern car rental platform enabling users to search cars by location and date range, view car details, and make bookings. Owners can add and manage cars, toggle availability, and process bookings by changing status (pending, confirmed, canceled). The system features robust authentication, image uploads via CDN, and availability checks to prevent overlapping bookings.
 
@@ -238,14 +250,23 @@ This repository contains a collection of 6 full-stack web applications built usi
 - **Notifications:** React Hot Toast
 - **State:** Context API for auth + axios instance
 
-For setup and detailed docs, see:
+Docs: `Car Rental Booking Platform/Backend/Readme.md`, `Car Rental Booking Platform/Frontend/README.md`
 
-- `Car Rental Booking Platform/Backend/Readme.md`
-- `Car Rental Booking Platform/Frontend/README.md`
+### 7) AI SaaS App (`AI SaaS App/`)
+
+Foundational full‑stack app scaffolding for an AI‑driven SaaS. Includes typical MERN patterns with modern React, and separate Backend/Frontend workspaces.
+
+Docs: `AI SaaS App/Backend/README.md`, `AI SaaS App/Frontend/README.md`
+
+### 8) Social Media App (`social-media-app/`)
+
+A modern social app featuring profiles, connections, feeds, and real‑time messaging. Real‑time updates are implemented using Server‑Sent Events (SSE), with robust authentication flows and a clean UI.
+
+Docs: See project folders under `social-media-app/` (Backend and Frontend READMEs if present).
 
 ## 🚀 Common Technologies Across Projects
 
-### Backend (Shared Across All Projects)
+### Backend (Shared Across Many Projects)
 
 - **Runtime:** Node.js
 - **Framework:** Express.js v5
@@ -254,7 +275,7 @@ For setup and detailed docs, see:
 - **Security:** CORS, Dotenv for environment variables
 - **Development:** Nodemon for auto-restart
 
-### Frontend (Shared Across All Projects)
+### Frontend (Shared Across Many Projects)
 
 - **Framework:** React 19
 - **Build Tool:** Vite
@@ -271,6 +292,9 @@ MERN STACK PROJECT/
 ├── AI Powered Blog App/
 │   ├── Backend/
 │   └── Frontend/
+├── AI SaaS App/
+│   ├── Backend/
+│   └── Frontend/
 ├── AI_BG_Removal/
 │   ├── Backend/
 │   └── Frontend/
@@ -284,21 +308,46 @@ MERN STACK PROJECT/
 ├── Car Rental Booking Platform/
 │   ├── Backend/
 │   └── Frontend/
-└── E-commerce Website/
+├── E-commerce Website/
     ├── Admin/
+    ├── Backend/
+    └── Frontend/
+└── social-media-app/
     ├── Backend/
     └── Frontend/
 ```
 
 ## 🛠️ Getting Started
 
-Each project contains its own README.md with detailed setup instructions. Generally:
+Each project contains its own README.md with detailed setup instructions. On Windows (PowerShell), the general flow is:
 
-1. Navigate to the project directory
-2. Install dependencies: `npm install` (both backend and frontend)
-3. Set up environment variables
-4. Start the backend: `npm run server`
-5. Start the frontend: `npm run dev`
+1. Navigate to a project (for example, the Car Rental app Backend):
+
+   ```powershell
+   cd "Car Rental Booking Platform/Backend"
+   ```
+
+2. Install dependencies (repeat in both Backend and Frontend):
+
+   ```powershell
+   npm install
+   ```
+
+3. Configure environment variables by creating a `.env` file in the Backend (and Frontend if required). See the project's own README for the exact keys (e.g., `MONGODB_URI`, JWT or Clerk keys, Cloudinary/ImageKit, Razorpay/Stripe, etc.).
+
+4. Start the Backend (common scripts):
+
+   ```powershell
+   npm run dev   # or: npm run server
+   ```
+
+5. In another terminal, start the Frontend:
+
+   ```powershell
+   cd "../Frontend"; npm install; npm run dev
+   ```
+
+6. Open the local URLs printed by the servers (typically Vite at [http://localhost:5173](http://localhost:5173) and API at [http://localhost:5000](http://localhost:5000) or similar).
 
 ## 🤝 Contributing
 
@@ -317,7 +366,7 @@ We welcome contributions from the community! Here's how you can contribute to th
 1. **Fork the Repository**
 
    ```bash
-   git clone https://github.com/your-username/MERN-STACK-PROJECT.git
+   git clone https://github.com/Surajgupta001/MERN-STACK-PROJECT.git
    cd MERN-STACK-PROJECT
    ```
 
@@ -398,12 +447,12 @@ Thank you for contributing to MERN Stack Projects Collection! 🎉
 - Consistent project structure across all applications
 - Mix of TailwindCSS v3 and v4 depending on project timeline
 - Various payment integrations (Razorpay, Stripe)
-- Real-time features using Socket.io
-- AI integrations with Google Generative AI
-- Authentication solutions (JWT, Clerk)
+- Real-time features implemented via Socket.io or Server‑Sent Events (SSE), depending on the app
+- AI integrations (for example, Google Generative AI) where applicable
+- Authentication solutions (JWT or Clerk) depending on the app
 
 ---
 
 **Author:** Suraj Gupta
 **Repository:** MERN-STACK-PROJECT
-**Date:** September 17, 2025
+**Date:** October 15, 2025
