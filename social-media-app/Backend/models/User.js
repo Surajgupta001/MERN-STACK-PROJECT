@@ -1,4 +1,4 @@
-import mongoose, { connections } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     _id: {
@@ -35,15 +35,18 @@ const userSchema = new mongoose.Schema({
     },
     followers: [{
         type: String,
-        ref: 'User'
+        ref: 'User',
+        default: []
     }],
     following: [{
         type: String,
-        ref: 'User'
+        ref: 'User',
+        default: []
     }],
     connections: [{
         type: String,
-        ref: 'User'
+        ref: 'User',
+        default: []
     }]
 }, {
     timestamps: true,
