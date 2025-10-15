@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { assets } from '../assets/assets';
 import Loading from '../components/Loading';
 import StoriesBar from '../components/StoriesBar';
 import PostCard from '../components/PostCard';
-import RecentMessages from '../components/recentMessages';
+import RecentMessages from '../components/RecentMessages';
 import { useAuth } from '@clerk/clerk-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
@@ -14,7 +14,7 @@ function Feed() {
     const [loading, setLoading] = useState(true);
     const { getToken } = useAuth();
 
-    const fetchFeeds = async () => {
+    const fetchFeeds = useCallback(async () => {
         try {
             setLoading(true);
             const { data } = await api.get('/api/post/feed', {
@@ -29,11 +29,11 @@ function Feed() {
             toast.error(error.message);
         }
         setLoading(false);
-    };
+    }, [getToken]);
 
     useEffect(() => {
         fetchFeeds();
-    }, []);
+    }, [fetchFeeds]);
 
     return !loading ? (
     <div className='flex items-start justify-center h-full gap-5 py-10 pr-4 overflow-y-scroll no-scrollbar md:pr-5 xl:pr-7 xl:gap-7'>
