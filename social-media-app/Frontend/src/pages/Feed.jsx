@@ -1,17 +1,33 @@
 import React, { useEffect, useState } from 'react'
-import { assets, dummyPostsData } from '../assets/assets';
+import { assets } from '../assets/assets';
 import Loading from '../components/Loading';
 import StoriesBar from '../components/StoriesBar';
 import PostCard from '../components/PostCard';
 import RecentMessages from '../components/recentMessages';
+import { useAuth } from '@clerk/clerk-react';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 function Feed() {
 
-    const [feed, setFeed] = useState([]);
+    const [feeds, setFeeds] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { getToken } = useAuth();
 
     const fetchFeeds = async () => {
-        setFeed(dummyPostsData);
+        try {
+            setLoading(true);
+            const { data } = await api.get('/api/post/feed', {
+                headers: { Authorization: `Bearer ${await getToken()}` }
+            })
+            if (data.success) {
+                setFeeds(data.posts);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
         setLoading(false);
     };
 
@@ -25,7 +41,7 @@ function Feed() {
             <div>
                 <StoriesBar />
                 <div className='p-4 space-y-6'>
-                    {feed.map((post) => (
+                    {feeds.map((post) => (
                         <PostCard key={post._id} post={post} />
                     ))}
                 </div>

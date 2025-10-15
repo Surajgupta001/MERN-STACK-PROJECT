@@ -1,10 +1,16 @@
 import React, { useState } from 'react'
-import { dummyUserData } from '../assets/assets'
 import { Pencil } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser } from '../features/user/userSlice';
+import { useAuth } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 function ProfileModal({ setShowEdit }) {
 
-    const user = dummyUserData;
+    const dispatch = useDispatch();
+    const { getToken } = useAuth();
+    
+    const user = useSelector((state) => state.user.value);
 
     const [editForm, setEditForm] = useState({
         username: user.username,
@@ -18,6 +24,26 @@ function ProfileModal({ setShowEdit }) {
     const handleSaveProfile = async (e) => {
         e.preventDefault();
         // Handle profile save logic here
+        try {
+            
+            const userData = new FormData();
+            const { username, bio, location, profile_picture, cover_photo, full_name } = editForm;
+
+            userData.append('username', username);
+            userData.append('bio', bio);
+            userData.append('location', location);
+            userData.append('full_name', full_name);
+            profile_picture && userData.append('profile', profile_picture);
+            cover_photo && userData.append('cover', cover_photo);
+            
+            const token = await getToken();
+            await dispatch(updateUser({ userData, token })).unwrap();
+            toast.success('Profile updated successfully');
+            setShowEdit(false);
+        } catch (error) {
+            // Handle error
+            toast.error(error.message);
+        }
     };
 
     return (

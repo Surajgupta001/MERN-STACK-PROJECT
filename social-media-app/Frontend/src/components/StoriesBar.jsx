@@ -1,23 +1,39 @@
-import React, { useEffect, useState } from 'react'
-import { dummyStoriesData } from '../assets/assets';
+import React, { useCallback, useEffect, useState } from 'react'
 import { Plus } from 'lucide-react';
 import moment from 'moment';
 import StoryModel from './StoryModel';
 import StoryViewer from './StoryViewer';
+import { useAuth } from '@clerk/clerk-react';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 function StoriesBar() {
+
+    const { getToken } = useAuth();
 
     const [stories, setStories] = useState([]);
     const [showModel, setShowModel] = useState(false);
     const [viewStory, setViewStory] = useState(null);
 
-    const fetchStories = async () => {
-        setStories(dummyStoriesData);
-    };
-
+    const fetchStories = useCallback(async () => {
+        try {
+            const token = await getToken();
+            const { data } = await api.get('/api/story/get', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            if (data.success) {
+                setStories(data.stories);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }, [getToken]);
+    
     useEffect(() => {
         fetchStories();
-    }, []);
+    }, [fetchStories]);
 
     return (
         <div className='w-screen sm:w-[calc(100vw-240px)] lg:max-w-2xl overflow-x-auto no-scrollbar px-4'>
@@ -34,22 +50,24 @@ function StoriesBar() {
                 </div>
                 {/* Story Cards */}
                 {stories.map((story, index) => (
-                    <div onClick={() => setViewStory(story)} key={index} className='relative w-28 aspect-[3/4] rounded-lg shadow cursor-pointer hover:shadow-lg transition-all bg-gradient-to-b from-indigo-500 to-purple-600 hover:from-indigo-700 hover:to-purple-800 active:scale-95 overflow-hidden'>
+                    <div
+                        onClick={() => setViewStory(story)}
+                        key={index}
+                        className='relative w-28 aspect-[3/4] rounded-lg shadow cursor-pointer hover:shadow-lg transition-all active:scale-95 overflow-hidden'
+                        style={story.media_type === 'text' && story.background_color ? { background: story.background_color } : { background: 'linear-gradient(to bottom, #6366f1, #8b5cf6)' }}
+                    >
                         <img src={story.user.profile_picture} alt='' className='absolute z-10 rounded-full shadow size-8 top-3 left-3 ring ring-gray-100' />
                         <p className='absolute text-xs text-white/70 top-14 left-3 right-2 line-clamp-3'>{story.content}</p>
                         <p className='absolute z-10 text-[10px] text-white/80 bottom-1 right-2'>{moment(story.createdAt).fromNow()}</p>
-                        {
-                            story.media_type !== 'text' && (
-                                <div className='absolute inset-0 overflow-hidden bg-black rounded-lg z-1'>
-                                    {
-                                        story.media_type === 'image' ?
-                                            <img src={story.media_url} alt="" className='object-cover w-full h-full transition duration-500 hover:scale-110 opacity-70 hover:opacity-80' />
-                                            :
-                                            <video src={story.media_url} className='object-cover w-full h-full transition duration-500 hover:scale-110 opacity-70 hover:opacity-80' />
-                                    }
-                                </div>
-                            )
-                        }
+                        {story.media_type !== 'text' && (
+                            <div className='absolute inset-0 overflow-hidden bg-black rounded-lg z-1'>
+                                {story.media_type === 'image' ? (
+                                    <img src={story.media_url} alt="" className='object-cover w-full h-full transition duration-500 hover:scale-110 opacity-70 hover:opacity-80' />
+                                ) : (
+                                    <video src={story.media_url} className='object-cover w-full h-full transition duration-500 hover:scale-110 opacity-70 hover:opacity-80' />
+                                )}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
