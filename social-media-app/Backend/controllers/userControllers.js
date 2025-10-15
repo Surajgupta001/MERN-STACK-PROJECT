@@ -127,7 +127,7 @@ export const updateUserData = async (req, res) => {
 export const discoverUsers = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { input } = req.body();
+        const { input } = req.body;
 
         const allUsers = await User.find({
             $or: [
@@ -163,7 +163,7 @@ export const discoverUsers = async (req, res) => {
 export const followUser = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { id } = req.body();
+        const { id } = req.body;
 
         const user = await User.findById(userId);
 
@@ -205,7 +205,7 @@ export const followUser = async (req, res) => {
 export const unFollowUser = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { id } = req.body();
+        const { id } = req.body;
 
         const user = await User.findById(userId);
         user.following = user.following.filter(user => user !== id);
@@ -237,7 +237,15 @@ export const unFollowUser = async (req, res) => {
 export const sendConnectionRequest = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { id } = req.body();
+        const { id } = req.body;
+
+        // Validate input
+        if (!id) {
+            return res.status(400).json({ success: false, message: 'Target user id is required' });
+        }
+        if (id === userId) {
+            return res.status(400).json({ success: false, message: 'You cannot connect with yourself' });
+        }
 
         // Check if user has sent more than 20 connection requests in the last 24 hours
         const last24Hours = new Date(Date.now() - 24*60*60*1000);
@@ -255,16 +263,15 @@ export const sendConnectionRequest = async (req, res) => {
             })
         }
 
-        // Check if users are already connected
-        const connection = await Connection.findOne({
+        // Check if any existing connection (pending or accepted) exists between the two users
+        const existingConnection = await Connection.findOne({
             $or: [
                 { from_user_id: userId, to_user_id: id },
                 { from_user_id: id, to_user_id: userId }
-            ],
-            status: 'accepted'
+            ]
         });
 
-        if (!connection) {
+        if (!existingConnection) {
             const newConnections = await Connection.create({
                 from_user_id: userId,
                 to_user_id: id
@@ -277,24 +284,26 @@ export const sendConnectionRequest = async (req, res) => {
 
             return res
             .status(200)
-            .json({
-                success: true,
-                message: 'Connection request sent successfully',
-            })
-        } else if (connection && connection.status === 'accepted') {
-            return res
-            .status(200)
-            .json({
-                success: true,
-                message: 'You are already connected with this user',
+            .json({ 
+                success: true, 
+                message: 'Connection request sent successfully' 
             })
         }
 
+        if (existingConnection.status === 'accepted') {
+            return res
+            .status(200)
+            .json({ 
+                success: true, 
+                message: 'You are already connected with this user' 
+            });
+        }
+        
         return res
-        .status(400)
-        .json({
-            success: false,
-            message: 'Connection request is already pending'
+        .status(200)
+        .json({ 
+            success: true, 
+            message: 'Connection request is already pending' 
         })
 
     } catch (error) {
@@ -313,10 +322,11 @@ export const getUserConnections = async (req, res) => {
     try {
         const { userId } = req.auth();
         const user = await User.findById(userId).populate('connections followers following');
-        
-        const connections = user.connections;
-        const followers = user.followers;
-        const following = user.following;
+
+        // If user is not found, return empty lists instead of throwing
+        const connections = user?.connections ?? [];
+        const followers = user?.followers ?? [];
+        const following = user?.following ?? [];
 
         const pendingConnections = (await Connection.find({ to_user_id: userId, status: 'pending' }).populate('from_user_id')).map(connection => connection.from_user_id);
 
@@ -346,7 +356,7 @@ export const getUserConnections = async (req, res) => {
 export const acceptConnectionRequest = async (req, res) => {
     try {
         const { userId } = req.auth();
-        const { id } = req.body();
+        const { id } = req.body;
 
         const connection = await Connection.findOne({ from_user_id: id, to_user_id: userId });
 
@@ -391,7 +401,13 @@ export const acceptConnectionRequest = async (req, res) => {
 // Get User Profile
 export const getUserProfiles = async (req, res) => {
     try {
-        const { profileId } = req.body();
+        const { profileId } = req.body;
+        if (!profileId) {
+            return res.status(400).json({
+                success: false,
+                message: 'profileId is required'
+            });
+        }
         const profile = await User.findById(profileId);
         if (!profile) {
             return res
