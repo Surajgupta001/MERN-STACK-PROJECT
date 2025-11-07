@@ -28,6 +28,15 @@ function AddDoctor() {
                 return toast.error("Please upload a doctor image");
             }
 
+            // Simple client-side validation to avoid 400s
+            if (password.length < 8) {
+                return toast.error("Password must be at least 8 characters");
+            }
+            const emailRegex = /.+@.+\..+/;
+            if (!emailRegex.test(email)) {
+                return toast.error("Please enter a valid email address");
+            }
+
             const formData = new FormData();
 
             formData.append('image', docImg)
@@ -46,7 +55,17 @@ function AddDoctor() {
                 console.log(`${key}: ${value}`);
             });
 
-            const { data } = await axios.post(backendUrl + '/api/admin/add-doctor', formData, { headers: { aToken } })
+            const { data } = await axios.post(
+                backendUrl + '/api/admin/add-doctor',
+                formData,
+                {
+                    headers: {
+                        atoken: aToken,
+                        // Let axios set correct boundary automatically. Explicit content-type not required, but harmless:
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
             if (data.success) {
                 toast.success(data.message)
                 setDocImg(false)
@@ -64,7 +83,8 @@ function AddDoctor() {
             }
         } catch (error) {
             console.error("Error adding doctor:", error);
-            toast.error("Failed to add doctor");
+            const serverMsg = error?.response?.data?.message || "Failed to add doctor";
+            toast.error(serverMsg);
 
         }
     };
