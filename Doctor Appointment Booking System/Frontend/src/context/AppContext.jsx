@@ -36,7 +36,10 @@ const AppContextProvider = (props) => {
 
         try {
 
-            const { data } = await axios.get(backendUrl + '/api/user/get-profile', { headers: { token } });
+            const { data } = await axios.get(
+                backendUrl + '/api/user/get-profile',
+                { headers: { token } }
+            );
             if (data.success) {
                 setUserData(data.userData);
                 console.log("User profile data loaded successfully:", data.userData);
@@ -48,7 +51,14 @@ const AppContextProvider = (props) => {
 
         } catch (error) {
             console.error("Error loading user profile data:", error);
-            toast.error("Failed to load user profile data");
+            // If unauthorized, clear token and prompt re-login
+            if (error?.response?.status === 401) {
+                localStorage.removeItem('token');
+                setToken(false);
+                toast.error('Session expired. Please log in again.');
+            } else {
+                toast.error("Failed to load user profile data");
+            }
         }
     };
 
