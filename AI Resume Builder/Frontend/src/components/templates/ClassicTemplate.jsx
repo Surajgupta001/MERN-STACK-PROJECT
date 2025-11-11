@@ -82,9 +82,11 @@ const ClassicTemplate = ({ data, accentColor }) => {
                                     </div>
                                 </div>
                                 {exp.description && (
-                                    <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {exp.description}
-                                    </div>
+                                    <ul className="list-disc list-inside text-sm text-gray-700 leading-relaxed space-y-1">
+                                        {exp.description.split('\n').map((line, i) => (
+                                            line.trim() ? <li key={i}>{line}</li> : null
+                                        ))}
+                                    </ul>
                                 )}
                             </div>
                         ))}

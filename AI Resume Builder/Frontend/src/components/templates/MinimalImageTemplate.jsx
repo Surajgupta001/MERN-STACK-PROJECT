@@ -18,12 +18,12 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                     {/* Image */}
                     {data.personal_info?.image && typeof data.personal_info.image === 'string' ? (
                         <div className="mb-6">
-                            <img src={data.personal_info.image} alt="Profile" className="w-32 h-32 object-cover rounded-full mx-auto" style={{ background: accentColor+'70' }} />
+                            <img src={data.personal_info.image} alt="Profile" className="w-20 h-20 object-cover rounded-full mx-auto" style={{ background: accentColor+'70' }} />
                         </div>
                     ) : (
                         data.personal_info?.image && typeof data.personal_info.image === 'object' ? (
                             <div className="mb-6">
-                                <img src={URL.createObjectURL(data.personal_info.image)} alt="Profile" className="w-32 h-32 object-cover rounded-full mx-auto" />
+                                <img src={URL.createObjectURL(data.personal_info.image)} alt="Profile" className="w-20 h-20 object-cover rounded-full mx-auto" />
                             </div>
                         ) : null
                     )}
@@ -138,13 +138,13 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                                 {exp.is_current ? "Present" : formatDate(exp.end_date)}
                                             </span>
                                         </div>
-                                        <p className="text-sm mb-2" style={{ color: accentColor }} >
+                                        <p className="text-sm mb-1" style={{ color: accentColor }}>
                                             {exp.company}
                                         </p>
                                         {exp.description && (
-                                            <ul className="list-disc list-inside text-sm text-zinc-700 leading-relaxed space-y-1">
+                                            <ul className="list-disc list-inside text-sm text-zinc-700 leading-tight mb-1">
                                                 {exp.description.split("\n").map((line, i) => (
-                                                    <li key={i}>{line}</li>
+                                                    line.trim() ? <li key={i}>{line}</li> : null
                                                 ))}
                                             </ul>
                                         )}
@@ -168,9 +168,9 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                             {project.type}
                                         </p>
                                         {project.description && (
-                                            <ul className="list-disc list-inside text-sm text-zinc-700  space-y-1">
+                                            <ul className="list-disc list-inside text-sm text-zinc-700 space-y-1">
                                                 {project.description.split("\n").map((line, i) => (
-                                                    <li key={i}>{line}</li>
+                                                    line.trim() ? <li key={i}>{line}</li> : null
                                                 ))}
                                             </ul>
                                         )}

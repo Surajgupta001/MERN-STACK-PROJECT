@@ -18,7 +18,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
                 </h1>
 
                 <div className="flex flex-wrap gap-6 text-sm text-gray-600">
-                    {data.personal_info?.email && <span className="break-all">{data.personal_info.email}</span>}
+                    {data.personal_info?.email && <span>{data.personal_info.email}</span>}
                     {data.personal_info?.phone && <span>{data.personal_info.phone}</span>}
                     {data.personal_info?.location && <span>{data.personal_info.location}</span>}
                     {data.personal_info?.linkedin && (
@@ -57,9 +57,11 @@ const MinimalTemplate = ({ data, accentColor }) => {
                                 </div>
                                 <p className="text-gray-600 mb-2">{exp.company}</p>
                                 {exp.description && (
-                                    <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                        {exp.description}
-                                    </div>
+                                    <ul className="list-disc list-inside text-sm text-gray-700 leading-relaxed space-y-1">
+                                        {exp.description.split('\n').map((line, i) => (
+                                            line.trim() ? <li key={i}>{line}</li> : null
+                                        ))}
+                                    </ul>
                                 )}
                             </div>
                         ))}

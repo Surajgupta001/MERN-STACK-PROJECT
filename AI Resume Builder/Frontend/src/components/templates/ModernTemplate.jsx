@@ -70,11 +70,23 @@ const ModernTemplate = ({ data, accentColor }) => {
 							Experience
 						</h2>
 
-						<div className="space-y-6">
-							{data.experience.map((exp, index) => (
-								<div key={index} className="relative pl-6 border-l border-gray-200">
+							<div className="space-y-4">
+								{data.experience.map((exp, index) => (
+									<div key={index} className="relative pl-10 border-l border-gray-200">
 
-									<div className="flex justify-between items-start mb-2">
+										{/* small white mask behind the dot to hide the border line */}
+										<span
+											className="absolute left-0 top-0 transform -translate-x-1/2"
+											style={{ width: 20, height: 36, backgroundColor: '#ffffff', zIndex: 9 }}
+										/>
+
+										{/* timeline dot (above the mask) */}
+										<span
+											className="absolute left-0 top-3 transform -translate-x-1/2 w-3 h-3 rounded-full"
+											style={{ backgroundColor: accentColor, zIndex: 10 }}
+										/>
+
+										<div className="flex justify-between items-start mb-2">
 										<div>
 											<h3 className="text-xl font-medium text-gray-900">{exp.position}</h3>
 											<p className="font-medium" style={{ color: accentColor }}>{exp.company}</p>
@@ -84,9 +96,11 @@ const ModernTemplate = ({ data, accentColor }) => {
 										</div>
 									</div>
 									{exp.description && (
-										<div className="text-gray-700 leading-relaxed mt-3 whitespace-pre-line">
-											{exp.description}
-										</div>
+										<ul className="list-disc list-inside text-sm text-gray-700 leading-tight mt-3">
+											{exp.description.split('\n').map((line, i) => (
+												line.trim() ? <li key={i}>{line}</li> : null
+											))}
+										</ul>
 									)}
 								</div>
 							))}
