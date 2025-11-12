@@ -60,7 +60,7 @@ function Hero() {
 
                 {/* Hero Section */}
                 <div className="relative flex flex-col items-center justify-center px-4 text-sm text-black md:px-16 lg:px-24 xl:px-40">
-                    <div className="absolute top-28 xl:top-10 -z-10 left-1/4 w-72 h-72 sm:w-96 sm:h-96 xl:w-[30rem] xl:h-[30rem] 2xl:w-[33rem] 2xl:h-[33rem] bg-green-300 blur-[100px] opacity-30"></div>
+                    <div className="absolute top-28 xl:top-10 -z-10 left-1/4 w-72 h-72 sm:w-96 sm:h-96 xl:w-120 xl:h-120 2xl:w-132 2xl:h-132 bg-green-300 blur-[100px] opacity-30"></div>
 
                     {/* Avatars + Stars */}
                     <div className="flex items-center mt-24">
@@ -86,7 +86,7 @@ function Hero() {
 
                     {/* Headline + CTA */}
                     <h1 className="text-5xl md:text-6xl font-semibold max-w-5xl text-center mt-4 md:leading-[70px]">
-                        Land your dream job with <span className="text-transparent bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-nowrap">AI-powered </span> resumes.
+                        Land your dream job with <span className="text-transparent bg-linear-to-r from-green-700 to-green-600 bg-clip-text text-nowrap">AI-powered </span> resumes.
                     </h1>
 
                     <p className="max-w-md text-base text-center my-7">Create, edit and download professional resumes with AI-Powered assistance</p>

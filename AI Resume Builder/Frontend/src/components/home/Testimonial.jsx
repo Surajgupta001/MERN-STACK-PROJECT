@@ -54,23 +54,23 @@ function Testimonial() {
                 <Title title="Dont't just take our words" description="Hear what our users say about us. We're always looking for ways to improve. If you have a positive experience with us, leave a review." />
             </div>
             <div className="relative w-full max-w-5xl mx-auto overflow-hidden marquee-row">
-                <div className="absolute top-0 left-0 z-10 w-20 h-full pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
+                <div className="absolute top-0 left-0 z-10 w-20 h-full pointer-events-none bg-linear-to-r from-white to-transparent"></div>
                 <div className="marquee-inner flex transform-gpu min-w-[200%] pt-10 pb-5">
                     {[...cardsData, ...cardsData].map((card, index) => (
                         <CreateCard key={index} card={card} />
                     ))}
                 </div>
-                <div className="absolute top-0 right-0 z-10 w-20 h-full pointer-events-none md:w-40 bg-gradient-to-l from-white to-transparent"></div>
+                <div className="absolute top-0 right-0 z-10 w-20 h-full pointer-events-none md:w-40 bg-linear-to-l from-white to-transparent"></div>
             </div>
 
             <div className="relative w-full max-w-5xl mx-auto overflow-hidden marquee-row">
-                <div className="absolute top-0 left-0 z-10 w-20 h-full pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
+                <div className="absolute top-0 left-0 z-10 w-20 h-full pointer-events-none bg-linear-to-r from-white to-transparent"></div>
                 <div className="marquee-inner marquee-reverse flex transform-gpu min-w-[200%] pt-10 pb-5">
                     {[...cardsData, ...cardsData].map((card, index) => (
                         <CreateCard key={index} card={card} />
                     ))}
                 </div>
-                <div className="absolute top-0 right-0 z-10 w-20 h-full pointer-events-none md:w-40 bg-gradient-to-l from-white to-transparent"></div>
+                <div className="absolute top-0 right-0 z-10 w-20 h-full pointer-events-none md:w-40 bg-linear-to-l from-white to-transparent"></div>
             </div>
             <style>{`
             @keyframes marqueeScroll {
