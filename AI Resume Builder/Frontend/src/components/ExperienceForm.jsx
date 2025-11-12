@@ -1,7 +1,13 @@
-import { Briefcase, Plus, Sparkles, Trash2 } from 'lucide-react'
-import React from 'react'
+import { Briefcase, Loader2, Plus, Sparkles, Trash2 } from 'lucide-react'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
+import api from '../configs/api';
+import toast from 'react-hot-toast';
 
 function ExperienceForm({ data, onChange }) {
+
+    const { token } = useSelector(state => state.auth);
+    const [generatingIndex, setGeneratingIndex] = useState(-1);
 
     const addExperience = () => {
         const newExperience = {
@@ -24,6 +30,39 @@ function ExperienceForm({ data, onChange }) {
         const updated = [...data];
         updated[index] = { ...updated[index], [field]: value };
         onChange(updated);
+    };
+
+    const generateDescription = async (index) => {
+        setGeneratingIndex(index);
+        const experience = data[index];
+        // Guard: need at least some seed description or position/company context
+        if (!experience.position || !experience.company) {
+            toast.error('Add position and company first');
+            setGeneratingIndex(-1);
+            return;
+        }
+        const baseDesc = experience.description?.trim() || 'Write a concise impact-focused description.';
+        const prompt = `Enhance this job description: "${baseDesc}" for the role of ${experience.position} at ${experience.company}. Make it action-oriented, quantify impact if possible, avoid fluff. Return only the improved description.`;
+
+        try {
+            const response = await api.post('/api/v1/ai/enhance-job-desc', { userContent: prompt }, {
+                headers: { Authorization: token }
+            });
+            let enhanced = response.data?.data;
+            if (!enhanced) throw new Error('AI response missing enhanced content');
+            // Sanitize: remove leading * or - characters from lines
+            enhanced = enhanced
+                .split('\n')
+                .map(line => line.replace(/^([*\-•]+\s*)/, '').trim())
+                .join('\n')
+                .trim();
+            updateExperience(index, 'description', enhanced);
+            toast.success('Job description enhanced');
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+        } finally {
+            setGeneratingIndex(-1);
+        }
     };
 
     return (
@@ -67,9 +106,11 @@ function ExperienceForm({ data, onChange }) {
                             <div className='space-y-2'>
                                 <div className='flex items-center justify-between'>
                                     <label className='text-sm font-medium text-gray-700'>Job Description</label>
-                                    <button type='button' className='flex items-center gap-2 px-2 py-1 text-xs text-purple-700 transition-colors bg-purple-100 rounded hover:bg-purple-200'>
-                                        <Sparkles className='w-3 h-3' />
-                                        Enhance with AI
+                                    <button onClick={() => generateDescription(index)} disabled={generatingIndex == index} type='button' className='flex items-center gap-2 px-2 py-1 text-xs text-purple-700 transition-colors bg-purple-100 rounded hover:bg-purple-200 disabled:opacity-50'>
+                                        {generatingIndex == index ? (
+                                            <Loader2 className='w-3 h-3 animate-spin' />
+                                        ) : (<Sparkles className='w-3 h-3' />)}
+                                        {generatingIndex == index ? 'Enhancing...' : 'Enhance with AI'}
                                     </button>
                                 </div>
                                 <textarea onChange={(e) => updateExperience(index, 'description', e.target.value)} value={experience.description || ''} className='w-full px-3 py-2 text-sm border border-gray-300 rounded-lg resize-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100' placeholder='Describe your key responsibilities and achievements' rows={4} />

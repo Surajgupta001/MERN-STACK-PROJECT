@@ -42,7 +42,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
             {/* Experience */}
             {data.experience && data.experience.length > 0 && (
                 <section className="mb-10">
-                    <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
+                    <h2 className="text-xs uppercase tracking-widest mb-6 font-medium inline-block px-2 py-1 rounded" style={{ backgroundColor: accentColor, color: '#ffffff' }}>
                         Experience
                     </h2>
 
@@ -72,7 +72,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
             {/* Projects */}
             {data.project && data.project.length > 0 && (
                 <section className="mb-10">
-                    <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
+                    <h2 className="text-xs uppercase tracking-widest mb-6 font-medium inline-block px-2 py-1 rounded" style={{ backgroundColor: accentColor, color: '#ffffff' }}>
                         Projects
                     </h2>
 
@@ -90,7 +90,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
             {/* Education */}
             {data.education && data.education.length > 0 && (
                 <section className="mb-10">
-                    <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
+                    <h2 className="text-xs uppercase tracking-widest mb-6 font-medium inline-block px-2 py-1 rounded" style={{ backgroundColor: accentColor, color: '#ffffff' }}>
                         Education
                     </h2>
 
@@ -116,12 +116,16 @@ const MinimalTemplate = ({ data, accentColor }) => {
             {/* Skills */}
             {data.skills && data.skills.length > 0 && (
                 <section>
-                    <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
+                    <h2 className="text-xs uppercase tracking-widest mb-6 font-medium inline-block px-2 py-1 rounded" style={{ backgroundColor: accentColor, color: '#ffffff' }}>
                         Skills
                     </h2>
 
-                    <div className="text-gray-700">
-                        {data.skills.join(" • ")}
+                    <div className="flex flex-wrap gap-2 text-gray-700">
+                        {data.skills.map((s, i) => (
+                            <span key={i} className="px-3 py-1 text-sm rounded-full text-white" style={{ backgroundColor: accentColor }}>
+                                {s}
+                            </span>
+                        ))}
                     </div>
                 </section>
             )}

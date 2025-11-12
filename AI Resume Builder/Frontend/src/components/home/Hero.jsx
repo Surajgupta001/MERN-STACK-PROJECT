@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 function Hero() {
+
+    const { user } = useSelector(state => state.auth);
 
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -30,12 +33,13 @@ function Hero() {
                     </div>
 
                     <div className="flex gap-2">
-                        <Link to='/app?state=register' className="hidden px-6 py-2 text-white transition-all bg-green-500 rounded-full md:block hover:bg-green-700 active:scale-95">
+                        <Link to='/app?state=register' className="hidden px-6 py-2 text-white transition-all bg-green-500 rounded-full md:block hover:bg-green-700 active:scale-95" hidden={user}>
                             Get started
                         </Link>
-                        <Link to='/app?state=login' className="hidden px-6 py-2 transition-all border rounded-full md:block active:scale-95 hover:bg-slate-50 text-slate-700 hover:text-slate-900" >
+                        <Link to='/app?state=login' className="hidden px-6 py-2 transition-all border rounded-full md:block active:scale-95 hover:bg-slate-50 text-slate-700 hover:text-slate-900" hidden={user}>
                             Login
                         </Link>
+                        <Link to='/app' className='hidden px-8 py-2 text-white transition bg-green-500 rounded-full md:block hover:bg-green-700 active:scale-95' hidden={!user}>Dashboard</Link>
                     </div>
 
                     <button onClick={() => setMenuOpen(true)} className="transition md:hidden active:scale-90" >

@@ -14,7 +14,6 @@ function ColorPicker({ selectedColor, onChange }) {
         { name: 'Red', value: '#EF4444' },
         { name: 'Slate', value: '#64748B' },
         { name: 'Rose', value: '#F43F5E' },
-        { name: 'Emerald', value: '#10B981' },
     ];
 
     const [isOpen, setIsOpen] = useState(false);
