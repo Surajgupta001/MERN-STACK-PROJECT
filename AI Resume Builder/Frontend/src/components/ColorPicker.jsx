@@ -20,7 +20,7 @@ function ColorPicker({ selectedColor, onChange }) {
 
     return (
         <div className='relative'>
-            <button className='flex items-center gap-1 px-3 py-2 text-purple-600 transition rounded-lg texts-m bg-gradient-to-br from-purple-50 to-purple-100 ring-purple-300 hover:ring-all' onClick={() => setIsOpen((prev) => !prev)} >
+            <button className='flex items-center gap-1 px-3 py-2 text-purple-600 transition rounded-lg texts-m bg-linear-to-br from-purple-50 to-purple-100 ring-purple-300 hover:ring-all' onClick={() => setIsOpen((prev) => !prev)} >
                 <Palette size={16} />
                 <span className='max-sm:hidden'>Accent</span>
             </button>

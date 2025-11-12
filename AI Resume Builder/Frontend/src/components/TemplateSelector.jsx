@@ -30,7 +30,7 @@ function TemplateSelector({ selectedTemplate, onChange }) {
 
     return (
         <div className='relative'>
-            <button onClick={() => setIsOpen(!isOpen)} className='flex items-center gap-1 px-3 py-2 text-sm text-blue-600 transition rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 ring-blue-300 hover:shadow'>
+            <button onClick={() => setIsOpen(!isOpen)} className='flex items-center gap-1 px-3 py-2 text-sm text-blue-600 transition rounded-lg bg-linear-to-br from-blue-50 to-blue-100 ring-blue-300 hover:shadow'>
                 <Layout size={14} />
                 <span className='sm:hidden lg:inline'>Template</span>
             </button>
