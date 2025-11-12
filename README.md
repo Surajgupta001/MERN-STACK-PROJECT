@@ -6,6 +6,36 @@ This monorepo contains multiple full‑stack web applications built with the MER
 
 > Tip: Each project has its own Backend and Frontend folders with a dedicated README. Use the Quickstart section below to run any app locally on Windows.
 
+### 9) AI Resume Builder (`AI Resume Builder/`)
+
+**Overview:** An AI‑powered resume creation app with a guided builder, live preview, multiple templates, and accent color theming. Users can enhance professional summaries and job descriptions via AI, upload a profile image with optional background removal, make resumes public/private, share a view‑only link, and print/download using the browser.
+
+**Key Features:**
+
+- Live resume builder with modular sections (personal info, summary, experience, education, projects, skills)
+- Multiple templates with dynamic accent color
+- AI enhancement for professional summary and job descriptions
+- Image upload with optional background removal (ImageKit `e-bgremove`)
+- Public/private visibility toggle and share link (`/view/:resumeId`)
+- PDF printing via native browser print
+- Upload existing PDF (client extracts text) → AI structured parsing → new resume
+
+**Backend Technologies:**
+
+- Node.js + Express, MongoDB + Mongoose
+- JWT auth (jsonwebtoken), bcrypt
+- Multer (file upload), ImageKit (image processing)
+- OpenAI SDK configured for Gemini (chat.completions)
+- dotenv, CORS
+
+**Frontend Technologies:**
+
+- React + Vite, React Router, Redux Toolkit
+- Tailwind CSS, Lucide icons, react-hot-toast
+- Axios, react-pdftotext (PDF → text)
+
+Docs: `AI Resume Builder/Backend/README.md`, `AI Resume Builder/Frontend/README.md`
+
 ### 1) AI Powered Blog App (`AI Powered Blog App/`)
 
 **Overview:** A comprehensive blogging platform that leverages AI technology to help users create engaging content. The application features an intuitive rich text editor, AI-powered content generation, automatic image optimization, and a modern, responsive design. Users can create, edit, and publish blog posts with AI assistance for content ideas and image management.
