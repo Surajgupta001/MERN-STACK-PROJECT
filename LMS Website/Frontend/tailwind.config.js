@@ -11,7 +11,16 @@ export default {
         default: ["15px", "21px"],
       },
       gridTemplateColumns: {
-        'auto' : 'repeat(auto-fit, minmax(250px, 1fr))',
+        auto: "repeat(auto-fit, minmax(250px, 1fr))",
+      },
+      spacing: {
+        "section-height": "500px",
+      },
+      maxWidth: {
+        "course-card": "420px",
+      },
+      boxShadow: {
+        'custom-card': '0px 4px 15px 2px rgba(0, 0, 0, 0.1)'
       }
     },
   },
