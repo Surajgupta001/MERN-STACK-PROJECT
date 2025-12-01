@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend server for the LMS Website built with Node.js, Express, and MongoDB.",
+  "description": "Backend server for LMS built with Node.js, Express, and MongoDB.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

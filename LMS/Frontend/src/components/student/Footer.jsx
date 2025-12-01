@@ -27,7 +27,7 @@ function Footer() {
         </div>
       </div>
       </div>
-      <p className='py-4 text-xs text-center md:text-sm text-white/30'>copyright © 2024 LMS Website. All rights reserved.</p>
+      <p className='py-4 text-xs text-center md:text-sm text-white/30'>copyright © 2024 LMS. All rights reserved.</p>
     </footer>
   )
 }
