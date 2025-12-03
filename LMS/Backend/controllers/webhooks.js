@@ -1,7 +1,7 @@
 import { Webhook } from "svix";
 import User from "../models/user.models.js";
 import Stripe from "stripe";
-import Purchase from "../models/purchase.models.js";
+import { Purchase } from "../models/purchase.models.js";
 import Course from "../models/course.models.js";
 
 // API Controller function to manage Clerk User with database

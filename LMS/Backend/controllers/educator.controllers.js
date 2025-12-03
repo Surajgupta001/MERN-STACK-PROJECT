@@ -1,7 +1,7 @@
 import { clerkClient } from "@clerk/express";
 import Course from "../models/course.models.js";
 import { v2 as cloudinary } from "cloudinary";
-import Purchase from "../models/purchase.models.js";
+import { Purchase } from "../models/purchase.models.js";
 import User from "../models/user.models.js";
 
 // Update user role to educator
