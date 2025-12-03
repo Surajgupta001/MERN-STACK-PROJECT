@@ -1,7 +1,7 @@
 import Course from "../models/course.models.js";
 import Purchase from "../models/purchase.models.js";
 import User from "../models/user.models.js";
-import stripe from "stripe";
+import Stripe from "stripe";
 
 // Get User Data
 export const getUserData = async (req, res) => {
@@ -64,27 +64,22 @@ export const purchaseCourse = async (req, res) => {
       });
     }
 
-    const computedAmount = Number(
-      (
-        courseData.coursePrice -
-        (courseData.discount * courseData.coursePrice) / 100
-      ).toFixed(2)
-    );
-
     const purchaseData = {
       courseId: courseData._id,
       userId,
-      amount: computedAmount,
-      status: "pending",
+      amount: (
+        courseData.coursePrice -
+        (courseData.discount * courseData.coursePrice) / 100
+      ).toFixed(2),
     };
 
     const newPurchase = await Purchase.create(purchaseData);
 
-    // Stripe Gateway initialization
-    const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
+    // Stripe Gateway Integration
+    const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+
     const currency = process.env.CURRENCY.toLowerCase();
 
-    // Creating line items for stripe
     const line_items = [
       {
         price_data: {

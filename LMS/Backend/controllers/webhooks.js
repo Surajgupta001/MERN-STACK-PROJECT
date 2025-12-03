@@ -63,12 +63,11 @@ export const clerkWebhooks = async (req, res) => {
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const stripeWebhooks = async (request, response) => {
+    const sig = request.headers["stripe-signature"];
     let event;
-
     try {
-        const sig = request.headers["stripe-signature"];
         // request.body is a raw Buffer because server.js uses express.raw({ type: 'application/json' })
-        event = stripeInstance.webhooks.constructEvent(
+        event = Stripe.webhooks.constructEvent(
             request.body,
             sig,
             process.env.STRIPE_WEBHOOK_SECRET
@@ -98,7 +97,7 @@ export const stripeWebhooks = async (request, response) => {
             courseData.enrolledStudents.push(userData);
             await courseData.save();
 
-            userData.purchasedCourses.push(courseData._id);
+            userData.enrolledCourses.push(courseData._id);
             await userData.save();
 
             purchaseData.status = "completed";

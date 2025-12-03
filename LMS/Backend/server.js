@@ -21,9 +21,6 @@ await connectCloudinary();
 // Middleware
 app.use(cors());
 
-// Stripe webhook MUST come before express.json so raw body is available
-app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
-
 // JSON parsing for the rest of the app
 app.use(express.json());
 
@@ -40,6 +37,8 @@ app.post("/clerk", clerkWebhooks);
 app.use("/api/v1/educator", educatorRouter);
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/user", userRouter);
+// Stripe webhook MUST come before express.json so raw body is available
+app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 
 // Port configuration
 const port = process.env.PORT || 5000;
