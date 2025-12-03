@@ -2,7 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import ConnectDB from './config/database.js';
-import { clerkWebhooks } from './controllers/webhooks.js';
+import { clerkWebhooks, stripeWebhooks } from './controllers/webhooks.js';
+import educatorRouter from './routes/educator.routes.js';
+import { clerkMiddleware } from '@clerk/express';
+import connectCloudinary from './config/cloudinary.js';
+import courseRouter from './routes/course.routes.js';
+import userRouter from './routes/user.routes.js';
 
 // Initialize Express app
 const app = express();
@@ -10,9 +15,15 @@ const app = express();
 // Database connection
 await ConnectDB();
 
+// Connect to Cloudinary
+await connectCloudinary();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Clerk middleware
+app.use(clerkMiddleware());
 
 // Default route
 app.get('/', (req, res) => {
@@ -20,7 +31,11 @@ app.get('/', (req, res) => {
 });
 
 // Import and use webhooks route
-app.post('/clerk', express.json(), clerkWebhooks);
+app.post('/clerk', clerkWebhooks);
+app.use('/api/v1/educator', educatorRouter);
+app.use('/api/v1/course', courseRouter);
+app.use('/api/v1/user', userRouter);
+app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
 
 // Port configuration
 const port = process.env.PORT || 5000;
