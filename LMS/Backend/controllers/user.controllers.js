@@ -94,10 +94,17 @@ export const purchaseCourse = async (req, res) => {
     ];
 
     const session = await stripeInstance.checkout.sessions.create({
-      success_url: `${origin}/loading/my-enrollments`,
+      success_url: `${origin}/loading/my-enrollments?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
       line_items: line_items,
       mode: "payment",
+      customer_email: userData.email,
+      client_reference_id: userId,
+      payment_intent_data: {
+        metadata: {
+          purchaseId: newPurchase._id.toString(),
+        },
+      },
       metadata: {
         purchaseId: newPurchase._id.toString(),
       },

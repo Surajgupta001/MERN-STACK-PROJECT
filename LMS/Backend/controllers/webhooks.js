@@ -65,9 +65,10 @@ const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const stripeWebhooks = async (request, response) => {
     const sig = request.headers["stripe-signature"];
     let event;
+
     try {
         // request.body is a raw Buffer because server.js uses express.raw({ type: 'application/json' })
-        event = Stripe.webhooks.constructEvent(
+        event = stripeInstance.webhooks.constructEvent(
             request.body,
             sig,
             process.env.STRIPE_WEBHOOK_SECRET
