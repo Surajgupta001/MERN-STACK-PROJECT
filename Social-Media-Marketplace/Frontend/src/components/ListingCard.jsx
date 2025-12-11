@@ -10,7 +10,7 @@ function ListingCard({listing}) {
     const navigate = useNavigate();
     
     return (
-        <div className='relative overflow-hidden transition bg-white border border-gray-100 shadow rounded-2xl-sm hover:shadow-md'>
+        <div className='relative overflow-hidden transition bg-white border border-gray-100 shadow rounded-2xl hover:shadow-md'>
             {/* Featured Banner */}
             {listing.featured && (
                 <>
