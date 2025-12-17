@@ -9,14 +9,17 @@ import Messages from './pages/Messages'
 import MyOrders from './pages/MyOrders'
 import Loading from './pages/Loading'
 import Navbar from './components/Navbar'
+import Chatbox from './components/Chatbox'
+import { useSelector } from 'react-redux'
 
 function App() {
 
   const { pathname } = useLocation();
+  const { isOpen } = useSelector((state) => state.chat);
 
   return (
     <div>
-      {!pathname.includes('/admin') && <Navbar />}
+      {(!pathname.includes('/admin') && !isOpen) && <Navbar />}
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/marketplace' element={<Marketplace />} />
@@ -29,6 +32,7 @@ function App() {
         <Route path='/loading' element={<Loading />} />
         <Route />
       </Routes>
+      <Chatbox />
     </div>
   )
 }
