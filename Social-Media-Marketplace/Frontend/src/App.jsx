@@ -11,6 +11,7 @@ import Loading from './pages/Loading'
 import Navbar from './components/Navbar'
 import Chatbox from './components/Chatbox'
 import { useSelector } from 'react-redux'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -19,11 +20,12 @@ function App() {
 
   return (
     <div>
+      <Toaster />
       {(!pathname.includes('/admin') && !isOpen) && <Navbar />}
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/marketplace' element={<Marketplace />} />
-        <Route path='/my-listing' element={<MyListing />} />
+        <Route path='/my-listings' element={<MyListing />} />
         <Route path='/listing/:listingId' element={<ListingDetails />} />
         <Route path='/create-listing' element={<ManageListing />} />
         <Route path='/edit-listing/:id' element={<ManageListing />} />
