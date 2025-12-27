@@ -12,6 +12,13 @@ import Navbar from './components/Navbar'
 import Chatbox from './components/Chatbox'
 import { useSelector } from 'react-redux'
 import { Toaster } from 'react-hot-toast'
+import Layout from './pages/admin/Layout'
+import Dashboard from './pages/admin/Dashboard'
+import CredentialVerify from './pages/admin/CredentialVerify'
+import CredentialChange from './pages/admin/CredentialChange'
+import AllListings from './pages/admin/AllListings'
+import Transactions from './pages/admin/Transactions'
+import Withdrawal from './pages/admin/Withdrawal'
 
 function App() {
 
@@ -32,6 +39,15 @@ function App() {
         <Route path='/messages' element={<Messages />} />
         <Route path='/my-orders' element={<MyOrders />} />
         <Route path='/loading' element={<Loading />} />
+        {/* Admin Routes */}
+        <Route path='/admin' element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path='verify-credentials' element={<CredentialVerify />} />
+          <Route path='change-credentials' element={<CredentialChange />} />
+          <Route path='list-listings' element={<AllListings />} />
+          <Route path='transactions' element={<Transactions />} />
+          <Route path='withdrawal' element={<Withdrawal />} />
+        </Route>
         <Route />
       </Routes>
       <Chatbox />
