@@ -11,7 +11,7 @@ const ListingDetailsModal = ({ listing, onClose }) => {
     }, []);
 
     return (
-        <div className="fixed inset-0 bg-black/70 z-[100] backdrop-blur flex items-center justify-center sm:p-4">
+        <div className="fixed inset-0 bg-black/70 z-100 backdrop-blur flex items-center justify-center sm:p-4">
             <div className="bg-white sm:rounded-lg w-full max-w-2xl h-screen sm:h-[600px] flex flex-col overflow-hidden">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 text-white bg-linear-to-r from-indigo-600 to-indigo-400 sm:rounded-t-lg">
