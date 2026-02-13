@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Project } from '../types';
 import { LaptopIcon, Loader2Icon, MessageSquareIcon, SaveIcon, SmartphoneIcon, TabletIcon, XIcon, FullscreenIcon, ArrowBigDownDashIcon, EyeOffIcon, EyeIcon } from 'lucide-react';
 import { dummyConversations, dummyProjects, dummyVersion } from '../assets/assets';
 import Sidebar from '../components/Sidebar';
+import ProjectPreview from '../components/ProjectPreview';
+import { projectPreviewRef } from '../components/ProjectPreview';
 
 function Projects() {
 
@@ -18,6 +20,8 @@ function Projects() {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+
+    const previewRef = useRef<projectPreviewRef>(null);
 
     const fetchProject = async () => {
         const project = dummyProjects.find(project => project.id === projectId) || null;
@@ -113,7 +117,7 @@ function Projects() {
             <div className='flex flex-1 overflow-auto no-scrollbar'>
                 <Sidebar isMenuOpen={isMenuOpen} project={project} setProject={(p) => setProject(p)} isGenerating={isGenerating} setIsGenerating={setIsGenerating} />
                 <div className='flex-1 p-2 pl-0'>
-                    Project Preview
+                    <ProjectPreview ref={previewRef} project={project} isGenerating={isGenerating} device={device} showEditorPanel={!isMenuOpen} />
                 </div>
             </div>
         </div>
