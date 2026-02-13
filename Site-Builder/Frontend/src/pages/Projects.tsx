@@ -11,7 +11,7 @@ function Projects() {
     const navigate = useNavigate();
 
     const [project, setProject] = useState<Project | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [device, setDevice] = useState<'phone' | 'tablet' | 'desktop'>('desktop');
@@ -28,10 +28,23 @@ function Projects() {
                     ...project,
                     conversation: dummyConversations,
                     versions: dummyVersion
-                }),
-                    setLoading(false);
+                });
+                setIsGenerating(project.current_code ? false : true);
             }
+            setLoading(false);
         }, 2000)
+    };
+
+    const saveProject = async () => {
+        
+    };
+
+    const downlaodCode = async () => {
+
+    };
+
+    const togglePublish = async () => {
+
     };
 
     useEffect(() => {
@@ -51,7 +64,7 @@ function Projects() {
     return project ? (
         <div className='flex flex-col w-full h-screen text-white bg-gray-900'>
             {/* Builder Navbar */}
-            <div className='flex gap-4 px-4 py-2 max-sm:flex-col sm:items-center no-scrollbar'>
+            <div className='flex gap-4 px-4 py-2 overflow-x-auto max-sm:flex-col sm:items-center no-scrollbar'>
                 {/* Left  */}
                 <div className='flex items-center gap-2 sm:min-w-90 text-nowrap'>
                     <img onClick={() => navigate('/')} src="/favicon.svg" alt="logo" className='h-6 cursor-pointer' />
@@ -76,18 +89,18 @@ function Projects() {
                 </div>
                 {/* Right  */}
                 <div className='flex items-center justify-end flex-1 gap-3 text-xs sm:text-sm'>
-                    <button disabled={isSaving} className='bg-gray-800 max-sm:hidden hover:bg-gray-700 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors border border-gray-700'>
+                    <button onClick={saveProject} disabled={isSaving} className='bg-gray-800 max-sm:hidden hover:bg-gray-700 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors border border-gray-700'>
                         {isSaving ? <Loader2Icon className='size-4 animate-spin' /> : <SaveIcon size={16} />}
                         Save
                     </button>
                     <Link target='_blank' to={`/preview/${projectId}`} className='flex items-center gap-2 px-4 py-1 transition-colors border border-gray-700 rounded sm:rounded-sm hover:border-gray-500' >
                         <FullscreenIcon size={16} />Preview
                     </Link>
-                    <button className='bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
+                    <button onClick={downlaodCode} className='bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
                         <ArrowBigDownDashIcon size={16} />
                         Download
                     </button>
-                    <button className='bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
+                    <button onClick={togglePublish} className='bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors'>
                         {
                             project.isPublished ?
                                 <EyeOffIcon size={16} />
@@ -97,7 +110,7 @@ function Projects() {
                     </button>
                 </div>
             </div>
-            <div className='flex flex-1 overflow-auto'>
+            <div className='flex flex-1 overflow-auto no-scrollbar'>
                 <Sidebar isMenuOpen={isMenuOpen} project={project} setProject={(p) => setProject(p)} isGenerating={isGenerating} setIsGenerating={setIsGenerating} />
                 <div className='flex-1 p-2 pl-0'>
                     Project Preview
@@ -105,7 +118,7 @@ function Projects() {
             </div>
         </div>
     ) : (
-        <div className='flex items-center justify-center h-screen text-gray-400'>
+        <div className='flex items-center justify-center h-screen'>
             <p className='text-2xl font-medium text-gray-200'>Unable to load project!</p>
         </div>
     )
