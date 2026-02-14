@@ -39,7 +39,7 @@ function Community() {
                         </div>
                         <div className='flex flex-wrap gap-3.5'>
                             {projects.map((project) => (
-                                <Link to={`/projects/${project.id}`} key={project.id} target='_blank' className='transition-all duration-300 border border-gray-700 rounded-lg cursor-pointer w-72 max-sm:mx-auto bg-gray-900/60 overflow-hidden-md hover:border-indigo-800/80'>
+                                <Link to={`/view/${project.id}`} key={project.id} target='_blank' className='transition-all duration-300 border border-gray-700 rounded-lg cursor-pointer w-72 max-sm:mx-auto bg-gray-900/60 overflow-hidden-md hover:border-indigo-800/80'>
                                     {/* Desktop-like mini preview */}
                                     <div className='relative w-full h-40 overflow-hidden bg-gray-900 border-b border-gray-800'>
                                         {project.current_code ? (

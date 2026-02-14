@@ -69,7 +69,7 @@ function MyProject() {
                                             <span className='text-xs text-gray-500'>{new Date(project.createdAt).toLocaleDateString()}</span>
                                             <div className='flex gap-3 text-sm text-white'>
                                                 <button onClick={() => navigate(`/preview/${project.id}`)} className='px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md transition-all'>Preview</button>
-                                                <button onClick={() => navigate(`/preview/${project.id}`)} className='px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md transition-colors'>Open</button>
+                                                <button onClick={() => navigate(`/view/${project.id}`)} className='px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md transition-colors'>Open</button>
                                             </div>
                                         </div>
                                     </div>
