@@ -1,6 +1,7 @@
-import React, { forwardRef, useRef, ForwardedRef, useImperativeHandle } from 'react'
+import React, { forwardRef, useRef, ForwardedRef, useImperativeHandle, useState, useEffect } from 'react'
 import { Project } from '../types';
 import { iframeScript } from '../assets/assets';
+import EditorPanel from './EditorPanel';
 
 interface ProjectPreviewProps {
     project: Project;
@@ -16,6 +17,7 @@ export interface projectPreviewRef {
 function ProjectPreview({ project, isGenerating, device = 'desktop', showEditorPanel = true }: ProjectPreviewProps, ref: ForwardedRef<projectPreviewRef>) {
 
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const [selectedElement, setSelectedElement] = useState<any>(null);
 
     useImperativeHandle(ref, () => ({
         getCode: () => {
@@ -28,8 +30,34 @@ function ProjectPreview({ project, isGenerating, device = 'desktop', showEditorP
         tablet: 'max-w-[768px]',
         desktop: 'max-w-full'
     };
-    
-    const injectPreview = (html : string) => {
+
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data.type === 'ELEMENT_SELECTED') {
+                setSelectedElement(event.data.payload);
+            }
+            else if (event.data.type === 'CLEAR_SELECTION') {
+                setSelectedElement(null);
+            }
+        };
+        window.addEventListener('message', handleMessage);
+        return () => {
+            window.removeEventListener('message', handleMessage);
+        };
+    }, []);
+
+    const handleUpdate = (updates: any) => {
+        if (iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage({
+                type: 'UPDATE_ELEMENT',
+                payload: updates
+            },
+                '*'
+            );
+        }
+    };
+
+    const injectPreview = (html: string) => {
         if (!html) return '';
         if (!showEditorPanel) return html;
 
@@ -39,7 +67,7 @@ function ProjectPreview({ project, isGenerating, device = 'desktop', showEditorP
             return html + iframeScript;
         }
     };
-    
+
     return (
         <div className='relative flex flex-col items-center justify-center flex-1 h-full p-4 overflow-hidden bg-gray-900 rounded-xl max-sm:ml-2'>
             {project.current_code ? (
@@ -49,6 +77,16 @@ function ProjectPreview({ project, isGenerating, device = 'desktop', showEditorP
                         srcDoc={injectPreview(project.current_code)}
                         className="w-full h-full border-none"
                     />
+                    {showEditorPanel && selectedElement && (
+                        <EditorPanel selectedElement={selectedElement}
+                            onUpdate={handleUpdate} onClose={() => {
+                                setSelectedElement(null);
+                                if (iframeRef.current?.contentWindow) {
+                                    iframeRef.current.contentWindow.postMessage({ type: 'CLEAR_SELECTION_REQUEST' }, '*');
+                                }
+                            }}
+                        />
+                    )}
                 </div>
             ) : isGenerating && (
                 <div className='flex items-center justify-center h-full'>
