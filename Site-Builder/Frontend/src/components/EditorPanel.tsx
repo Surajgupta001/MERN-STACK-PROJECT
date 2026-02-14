@@ -47,7 +47,7 @@ function EditorPanel({ selectedElement, onUpdate, onClose }: EditorPanelProps) {
     };
 
     return (
-        <div className='absolute z-50 p-4 bg-white border border-gray-200 rounded-lg shadow-xl top-4 right-4 w-80 animate-in fade-in slide-in-from-right-5'>
+        <div className='absolute z-50 p-4 bg-white border border-gray-200 rounded-lg shadow-xl top-4 right-4 w-80 animate-fade-in fade-in'>
             <div className='flex items-center justify-between mb-4'>
                 <h3 className='font-semibold text-gray-800'>Edit Element</h3>
                 <button onClick={onClose} className='p-1 rounded-full hover:bg-gray-100'>
