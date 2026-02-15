@@ -1,11 +1,15 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { assets } from '../assets/assets';
 import { Link, useNavigate } from 'react-router-dom';
+import { authClient } from '../lib/auth-client';
+import { UserButton } from '@daveyplate/better-auth-ui';
 
 function Navbar() {
 
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
+
+    const { data: session, isPending } = authClient.useSession();
 
     return (
         <>
@@ -22,9 +26,15 @@ function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button onClick={() => navigate('/auth/signin')} className="px-6 py-1.5 transition bg-indigo-600 rounded-md active:scale-95 hover:bg-indigo-700 max-sm:text-sm">
-                        Get started
-                    </button>
+                    {isPending ? (
+                        <div className="w-10 h-10 rounded-full bg-slate-800 animate-pulse" />
+                    ) : !session ? (
+                        <button onClick={() => navigate('/auth/sign-in')} className="px-6 py-1.5 transition bg-indigo-600 rounded-md active:scale-95 hover:bg-indigo-700 max-sm:text-sm">
+                            Get started
+                        </button>
+                    ) : (
+                        <UserButton size='icon' />
+                    )}
                     <button id="open-menu" className="transition md:hidden active:scale-90" onClick={() => setMenuOpen(true)} >
                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>
                     </button>
@@ -32,8 +42,8 @@ function Navbar() {
             </nav>
             {/* Mobile Menu */}
             {menuOpen && (
-                <div className="fixed inset-0 z-100 bg-black/60 text-white backdrop-blur flex flex-col items-center justify-center text-lg gap-8 md:hidden transition-transform duration-300">
-                    <Link to="/" onClick={() => setMenuOpen(false)}>Products</Link>
+                <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 text-lg text-white transition-transform duration-300 z-100 bg-black/60 backdrop-blur md:hidden">
+                    <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
                     <Link to="/projects" onClick={() => setMenuOpen(false)}>My Projects</Link>
                     <Link to="/community" onClick={() => setMenuOpen(false)}>Community</Link>
                     <Link to="/pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
@@ -43,7 +53,7 @@ function Navbar() {
                 </div>
             )}
             {/* BACKGROUND IMAGE */}
-            <img src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/refs/heads/main/assets/hero/bg-gradient-2.png" className="absolute inset-0 -z-10 size-full opacity" alt="" />
+            <img src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/refs/heads/main/assets/hero/bg-gradient-2.png" className="absolute inset-0 opacity-50 -z-10 size-full" alt="" />
         </>
     )
 }
