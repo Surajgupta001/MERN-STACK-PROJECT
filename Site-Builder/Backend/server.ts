@@ -4,6 +4,8 @@ import 'dotenv/config';
 import cors from 'cors';
 import { auth } from './lib/auth';
 import { toNodeHandler } from 'better-auth/node';
+import userRouter from './routes/user.routes';
+import projectRouter from './routes/project.routes';
 
 const app = express();
 
@@ -18,9 +20,16 @@ app.use(cors(corsOrigins));
 
 app.all('/api/auth/{*any}', toNodeHandler(auth));
 
+app.use(express.json({
+    limit: '50mb',
+}));
+
 app.get('/', (req: Request, res: Response) => {
     res.send('Server is running! Welcome to the Site Builder Backend.');
 });
+
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/project', projectRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
