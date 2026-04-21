@@ -8,6 +8,7 @@ import aiRouter from './routes/aiRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const isVercel = process.env.VERCEL === '1';
 
 // Database connection
 await connectDB();
@@ -22,6 +23,10 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/resumes', resumeRouter);
 app.use('/api/v1/ai', aiRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+if (!isVercel) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+export default app;
