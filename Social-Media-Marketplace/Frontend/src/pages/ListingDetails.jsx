@@ -4,11 +4,15 @@ import { getProfileLink, platformIcons } from '../assets/assets';
 import { useDispatch, useSelector } from 'react-redux';
 import { ArrowLeftIcon, ArrowUpRightFromSquareIcon, Calendar, CheckCircle, ChevronLeftIcon, ChevronRightIcon, DollarSign, Eye, LineChart, Loader2Icon, MapPin, MessageSquareMoreIcon, ShoppingBagIcon, Users } from 'lucide-react';
 import { setChat } from '../app/features/chatSlice';
+import { useUser } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
 
 function ListingDetails() {
 
+  const { user, isLoaded } = useUser();
+
   const dispatch = useDispatch();
-  
+
   const navigate = useNavigate();
   const currency = import.meta.env.VITE_CURRENCY || '$';
 
@@ -33,7 +37,13 @@ function ListingDetails() {
 
   };
 
-  const loadChat = () => {
+  const loadChatBox = () => {
+    if (!isLoaded || !user) {
+      return toast('Please login to chat with seller');
+    }
+    if (user.id === listing.ownerId) {
+      return toast('You cannot chat with your own listing');
+    }
     dispatch(setChat({
       listing: listing,
     }))
@@ -221,7 +231,7 @@ function ListingDetails() {
           <div className='flex items-center justify-between mb-4 text-sm text-gray-600'>
             <p>Member since <span className='font-medium'>{new Date(listing.owner?.createdAt).toLocaleDateString()}</span></p>
           </div>
-          <button onClick={loadChat} className='flex items-center justify-center w-full gap-2 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-lg hover:bg-indigo-700'>
+          <button onClick={loadChatBox} className='flex items-center justify-center w-full gap-2 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-lg hover:bg-indigo-700'>
             <MessageSquareMoreIcon className='size-4' /> Chat
           </button>
           {listing.isCredentialChanged && (

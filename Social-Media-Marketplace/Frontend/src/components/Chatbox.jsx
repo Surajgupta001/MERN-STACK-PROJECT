@@ -1,32 +1,60 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { dummyChats } from '../assets/assets';
 import { Loader2Icon, Send, X } from 'lucide-react';
 import { clearChat } from '../app/features/chatSlice';
 import { format } from 'date-fns';
+import { useAuth, useUser } from '@clerk/clerk-react';
+import api from '../config/axios';
+import toast from 'react-hot-toast';
 
 function Chatbox() {
 
     const { listing, isOpen, chatId } = useSelector((state) => state.chat);
     const dispatch = useDispatch();
 
-    const user = { id: 'user_2' };
-
+    const { getToken } = useAuth();
+    const { user } = useUser();
+    
     const [chat, setChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [isSending, setIsSending] = useState(false);
 
+    // Safely format message timestamps to avoid RangeError on invalid dates
+    const formatTime = (value) => {
+        if (!value) return '';
+        const d = typeof value === 'string' || typeof value === 'number' ? new Date(value) : value;
+        if (!(d instanceof Date) || Number.isNaN(d.getTime())) return '';
+        return format(d, "MMM dd 'at' h:mm a");
+    };
+
     const fetchChat = async () => {
-        setChat(dummyChats[0]);
-        setMessages(dummyChats[0].messages);
-        setIsLoading(false);
+        try {
+            const token = await getToken();
+            const { data } = await api.post('/api/chat', {
+                listingId: listing.id,
+                chatId
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setChat(data?.chat);
+            setMessages(data?.chat?.messages || []);
+            setIsLoading(false);
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message);
+        }
     };
 
     useEffect(() => {
         if (listing) {
             fetchChat();
+            const interval = setInterval(() => {
+                fetchChat();
+            }, 3000);
+            return () => clearInterval(interval);
         }
     }, [listing]);
 
@@ -49,14 +77,24 @@ function Chatbox() {
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() || isSending) return;
-        setMessages([...messages, {
-            id: `msg_${Date.now()}`,
-            chat_id: chat.id,
-            sender_id: user.id,
-            message: newMessage,
-            createdAt: new Date(),
-        }]);
-        setNewMessage('');
+        try {
+            setIsSending(true);
+            const token = await getToken();
+            const { data } = await api.post('/api/chat/send-message', {
+                chatId: chat.id,
+                message: newMessage
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setMessages([...messages, data.messageObject]);
+            setNewMessage('');
+            setIsSending(false);
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error.message);
+            setIsSending(false);
+        }
     };
 
     if (!isOpen) return null;
@@ -92,11 +130,11 @@ function Chatbox() {
                             </div>
                         </div>
                     ) : (
-                        messages.map((message) => (
-                            <div key={message.id} className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}>
+                        messages.map((message, index) => (
+                            <div key={message.id ?? `${message.sender_id}-${message.createdAt ?? index}-${index}`} className={`flex ${message.sender_id === user.id ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[70%] p-3 rounded-lg pb-1 ${message.sender_id === user.id ? 'bg-indigo-600 text-white' : 'bg-white text-gray-800 border border-gray-200'}`}>
                                     <p className='text-sm whitespace-pre-wrap wrap-break-word'>{message.message}</p>
-                                    <p className={`text-[10px] mt-1 text-left ${message.sender_id === user.id ? 'text-indigo-200' : 'text-gray-400'}`}>{format(new Date(message.createdAt), "MMM dd 'at' h:mm a")}</p>
+                                    <p className={`text-[10px] mt-1 text-left ${message.sender_id === user.id ? 'text-indigo-200' : 'text-gray-400'}`}>{formatTime(message.createdAt)}</p>
                                 </div>
                             </div>
                         ))
