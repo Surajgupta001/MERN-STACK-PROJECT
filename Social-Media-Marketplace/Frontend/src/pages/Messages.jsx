@@ -1,15 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { dummyChats } from '../assets/assets';
-import { MessageCircle, Search } from 'lucide-react';
+import { MessageCircle, Search, TableRowsSplit } from 'lucide-react';
 import { format, parseISO, isYesterday, isToday } from 'date-fns';
 import { useDispatch } from 'react-redux';
 import { setChat } from '../app/features/chatSlice';
+import { useAuth, useUser } from '@clerk/clerk-react';
+import api from '../config/axios';
+import toast from 'react-hot-toast';
 
 function Messages() {
 
   const dispatch = useDispatch();
 
-  const user = { id: 'user_1' };
+  const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
 
   const [chats, setChats] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,16 +34,15 @@ function Messages() {
   };
 
   const filteredChats = useMemo(() => {
-    const query = searchQuery.toLowerCase();
-    return chats.filter((chat) => {
-      const chatUser = chat.chatUserId === user?.id ? chat.ownerUser : chat.chatUser;
-      return (
-        chat.listing?.title.toLowerCase().includes(query) ||
-        chatUser?.name.toLowerCase().includes(query) ||
-        (chat.lastMessage && chat.lastMessage.toLowerCase().includes(query))
-      );
-    })
-  }, [chats, searchQuery]);
+    const list = Array.isArray(chats) ? chats : [];
+    const query = (searchQuery || '').toLowerCase();
+    return list.filter((chat) => {
+      const chatUser = chat?.chatUserId === user?.id ? chat?.ownerUser : chat?.chatUser;
+      const title = (chat?.listing?.title || '').toLowerCase();
+      const name = (chatUser?.name || '').toLowerCase();
+      return title.includes(query) || name.includes(query);
+    });
+  }, [chats, searchQuery, user?.id]);
 
   const handleOpenCHat = (chat) => {
     dispatch(setChat({
@@ -50,17 +52,29 @@ function Messages() {
   };
 
   const fetchUserChats = async () => {
-    setChats(dummyChats);
-    setLoading(false);
+    try {
+      const token = await getToken();
+      const { data } = await api.get('/api/chat/user', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      setChats(data.chats);
+      setLoading(false);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
   };
 
   useEffect(() => {
-    fetchUserChats();
-    const interval = setInterval(() => {
+    if (user && isLoaded) {
       fetchUserChats();
-    }, 10 * 1000);
-    return () => clearInterval(interval);
-  }, [])
+      const interval = setInterval(() => {
+        fetchUserChats();
+      }, 10 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [user, isLoaded]);
 
   return (
     <div className='min-h-screen px-6 mx-auto md:px-16 lg:px-24 xl:px-32'>
@@ -81,13 +95,13 @@ function Messages() {
         ) : (
           filteredChats.length === 0 ? (
             <div className='p-16 text-center bg-white border border-gray-200 rounded-lg shadow-xs'>
-              <div className='flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full max-auto'>
+              <div className='flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full'>
                 <MessageCircle className='w-8 h-8 text-gray-400' />
-                <h3 className='mb-2 text-xl font-medium text-gray-800'>{searchQuery ? 'No conversations found' : 'No messages yet'}</h3>
-                <p className='text-gray-600'>
-                  {searchQuery ? 'Try a different search term.' : 'conversations by viewing a listing and clicking "chat with seller"'}
-                </p>
               </div>
+              <h3 className='mb-2 text-xl font-medium text-gray-800'>{searchQuery ? 'No conversations found' : 'No messages yet'}</h3>
+              <p className='text-gray-600'>
+                {searchQuery ? 'Try a different search term.' : 'Start conversations by viewing a listing and clicking "Chat"'}
+              </p>
             </div>
           ) : (
             <div className='bg-white border border-gray-200 divide-y divide-gray-200 rounded-lg shadow-xs'>

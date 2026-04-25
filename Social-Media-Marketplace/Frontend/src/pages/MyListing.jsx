@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ArrowDownCircleIcon, BanIcon, CheckCircle, Clock, CoinsIcon, DollarSign, Edit, Eye, EyeIcon, EyeOffIcon, LockIcon, Plus, StarIcon, TrashIcon, TrendingUp, Users, WalletIcon, XCircle } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import { platformIcons } from '../assets/assets';
 import CredentialSubmission from '../components/CredentialSubmission';
 import WithdrawModal from '../components/WithdrawModal';
+import { useAuth } from '@clerk/clerk-react';
+import toast from 'react-hot-toast';
+import api from '../config/axios';
+import { getAllPublicListing, getAllUserListing } from '../app/features/listingSlice';
 
 function MyListing() {
 
@@ -13,6 +17,9 @@ function MyListing() {
   const currency = import.meta.env.VITE_CURRENCY || '$';
 
   const navigate = useNavigate();
+
+  const { getToken } = useAuth();
+  const dispatch = useDispatch();
 
   const [showCredentialSubmission, setShowCredentialSubmission] = useState(null);
   const [showWithdrawal, setShowWithdrawal] = useState(null);
@@ -58,16 +65,63 @@ function MyListing() {
     }
   };
 
-  const toggleStatus = (listing) => {
-
+  const toggleStatus = async (listingId) => {
+    try {
+      toast.loading('Updating listing status...');
+      const token = await getToken();
+      const { data } = await api.put(`/api/listing/${listingId}/status`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      dispatch(getAllUserListing({ getToken }));
+      dispatch(getAllPublicListing());
+      toast.dismissAll();
+      toast.success(data.message);
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message || error.message)
+    }
   };
 
-  const deleteListing = (listingId) => {
-
+  const deleteListing = async (listingId) => {
+    try {
+      const confirm = window.confirm('Are you sure you want to delete this listing? If the credentials are changed, new credentials will be sent to ypur email.');
+      if (!confirm) return;
+      toast.loading('Deleting listing...');
+      const token = await getToken();
+      const { data } = await api.delete(`/api/listing/${listingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      dispatch(getAllUserListing({ getToken }));
+      dispatch(getAllPublicListing());
+      toast.dismissAll();
+      toast.success(data.message);
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message || error.message)
+    }
   };
 
-  const markAsFeatured = (listingId) => {
-
+  const markAsFeatured = async (listingId) => {
+    try {
+      toast.loading('Featuring listing...');
+      const token = await getToken();
+      const { data } = await api.put(`/api/listing/featured/${listingId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      dispatch(getAllUserListing({ getToken }));
+      dispatch(getAllPublicListing());
+      toast.dismissAll();
+      toast.success(data.message);
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message || error.message)
+    }
   };
 
   return (
@@ -184,7 +238,7 @@ function MyListing() {
                       <button onClick={() => navigate(`/edit-listing/${listing.id}`)} className='p-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-indigo-600'>
                         <Edit className='size-4' />
                       </button>
-                      <button onClick={toggleStatus(listing.id)} className='p-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-600'>
+                      <button onClick={() => toggleStatus(listing.id)} className='p-2 border-gray-300 rounded-lg hover:bg-gray-50 hover:text-purple-600'>
                         {listing.status !== 'active' && (
                           <EyeOffIcon className='size-4' />
                         )}

@@ -10,7 +10,7 @@ import MyOrders from './pages/MyOrders'
 import Loading from './pages/Loading'
 import Navbar from './components/Navbar'
 import Chatbox from './components/Chatbox'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Toaster } from 'react-hot-toast'
 import Layout from './pages/admin/Layout'
 import Dashboard from './pages/admin/Dashboard'
@@ -19,12 +19,30 @@ import CredentialChange from './pages/admin/CredentialChange'
 import AllListings from './pages/admin/AllListings'
 import Transactions from './pages/admin/Transactions'
 import Withdrawal from './pages/admin/Withdrawal'
+import { useAuth, useUser } from '@clerk/clerk-react'
+import { useEffect } from 'react'
+import { getAllPublicListing, getAllUserListing } from './app/features/listingSlice'
 
 function App() {
 
   const { pathname } = useLocation();
   const { isOpen } = useSelector((state) => state.chat);
 
+  const { getToken } = useAuth();
+  const { user, isLoaded } = useUser();
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllPublicListing())
+  }, []);
+
+  useEffect(()=> {
+    if (isLoaded && user) {
+      dispatch(getAllUserListing({ getToken }));
+    }
+  }, [isLoaded, user])
+  
   return (
     <div>
       <Toaster />

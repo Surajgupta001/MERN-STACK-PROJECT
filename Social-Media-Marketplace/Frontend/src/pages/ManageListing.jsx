@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-hot-toast';
 import { Loader2Icon, Upload } from 'lucide-react';
+import { useAuth } from '@clerk/clerk-react';
+import api from '../config/axios';
+import { getAllPublicListing, getAllUserListing } from '../app/features/listingSlice';
 
 function ManageListing() {
 
   const { id } = useParams();
   const navigate = useNavigate();
   const { userListings } = useSelector((state) => state.listing)
+
+  const { getToken } = useAuth();
+  const dispatch = useDispatch();
 
   const [loadingListing, setLoadingListing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -18,13 +24,13 @@ function ManageListing() {
     platform: '',
     username: '',
     followers_count: '',
-    engagment_rate: '',
+    engagement_rate: '',
     monthly_views: '',
     niche: '',
     price: '',
     description: '',
     verified: false,
-    mentized: false,
+    monetized: false,
     country: '',
     age_range: '',
     images: [],
@@ -79,6 +85,55 @@ function ManageListing() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    toast.loading('Saving....');
+    const dataCopy = structuredClone(formData);
+    try {
+      if (isEditing) {
+        dataCopy.images = formData.images.filter((image) => typeof image === 'string');
+        const formDataInstance = new FormData()
+        formDataInstance.append('accountDetails', JSON.stringify(dataCopy));
+
+        formData.images.filter((image) => typeof image !== 'string').forEach((image) => {
+          formDataInstance.append('images', image);
+        });
+
+        const token = await getToken();
+
+        const { data } = await api.put('/api/listing', formDataInstance, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        toast.dismiss();
+        toast.success(data.message);
+        dispatch(getAllUserListing({ getToken }));
+        dispatch(getAllPublicListing());
+        navigate('/my-listings');
+      } else {
+        delete dataCopy.images;
+
+        const formDataInstance = new FormData();
+        formDataInstance.append('accountDetails', JSON.stringify(dataCopy));
+        formData.images.forEach((image) => {
+          formDataInstance.append('images', image);
+        });
+
+        const token = await getToken();
+        const { data } = await api.post('/api/listing', formDataInstance, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        toast.dismiss();
+        toast.success(data.message);
+        dispatch(getAllUserListing({ getToken }));
+        dispatch(getAllPublicListing());
+        navigate('/my-listings');
+      }
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error.response?.data?.message || error.message);
+    }
   };
 
   if (loadingListing) {
@@ -114,7 +169,7 @@ function ManageListing() {
           <Section title='Account Metrics'>
             <div className='grid grid-cols-1 gap-6 mb-6 md:grid-cols-3'>
               <InputField label="Followers Count *" value={formData.followers_count} placeholder='e.g., 10000' onChange={(value) => handleInputChange('followers_count', value)} required={true} type="number" min={0} />
-              <InputField label="Engagement Rate (%) *" value={formData.engagment_rate} placeholder='e.g., 5.5' onChange={(value) => handleInputChange('engagment_rate', value)} required={true} type="number" min={0} max={100} step="0.01" />
+              <InputField label="Engagement Rate (%) *" value={formData.engagement_rate} placeholder='e.g., 5.5' onChange={(value) => handleInputChange('engagement_rate', value)} required={true} type="number" min={0} max={100} step="0.01" />
               <InputField label="Monthly Views *" value={formData.monthly_views} placeholder='e.g., 50000' onChange={(value) => handleInputChange('monthly_views', value)} required={true} type="number" min={0} />
             </div>
             <div className='grid grid-cols-1 gap-6 mb-6 md:grid-cols-2'>
@@ -123,7 +178,7 @@ function ManageListing() {
             </div>
             <div className='space-y-3'>
               <CheckboxField label="Account is verified on the platform" checked={formData.verified} onChange={(value) => handleInputChange('verified', value)} />
-              <CheckboxField label="Account is monetized" checked={formData.mentized} onChange={(value) => handleInputChange('mentized', value)} />
+              <CheckboxField label="Account is monetized" checked={formData.monetized} onChange={(value) => handleInputChange('monetized', value)} />
             </div>
           </Section>
           {/* pricing */}

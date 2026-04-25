@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { dummyOrders, platformIcons } from '../assets/assets';
+import { platformIcons } from '../assets/assets';
 import { toast } from 'react-hot-toast';
 import { CheckCircle2, ChevronDown, ChevronUp, Loader2Icon, Copy } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAuth, useUser } from '@clerk/clerk-react';
+import api from '../config/axios';
 
 function MyOrders() {
+
+  const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
 
   const currency = import.meta.env.VITE_CURRENCY || '$';
 
@@ -13,13 +18,27 @@ function MyOrders() {
   const [expandId, setExpandId] = useState(null);
 
   const fetchOrders = async () => {
-    setOrders(dummyOrders);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const token = await getToken();
+      const { data } = await api.get('/api/listing/user-orders', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setOrders(data.orders);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (isLoaded && user) {
+      fetchOrders();
+    }
+  }, [isLoaded, user]);
 
   const mask = (value, type) => {
     if (!value && value !== 0) return '';
@@ -31,7 +50,7 @@ function MyOrders() {
       await navigator.clipboard.writeText(txt);
       toast.success('Copied to clipboard');
     } catch (error) {
-      toast.error('Failed to copy to clipboard');
+      toast.error('Failed to copy to clipboard', error.message);
     }
   };
 
