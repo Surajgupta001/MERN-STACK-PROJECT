@@ -41,7 +41,7 @@ function EmployeeDashboard({ data }) {
                                 <p className='text-sm font-medium text-slate-500'>{card.title}</p>
                                 <p className='mt-1 text-2xl font-bold text-slate-900'>{card.value}</p>
                             </div>
-                            <card.icon className='size-10 shrink-0 rounded-lg bg-slate-100 p-2.5 text-slate-600 transition-colors duration-200 group-hover:bg-indigo-50 group-hover:text-indigo-600' />
+                            <card.icon className='w-10 h-10 shrink-0 rounded-lg bg-slate-100 p-2.5 text-slate-600 transition-colors duration-200 group-hover:bg-indigo-50 group-hover:text-indigo-600' />
                         </div>
                     </div>
                 ))}
