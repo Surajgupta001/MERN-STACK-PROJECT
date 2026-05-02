@@ -18,7 +18,7 @@ function Sidebar() {
         setMobileOpen(false);
     }, [pathname]);
 
-    const role = 'ADMIN' || 'EMPLOYEE'; // Replace with actual role from auth context
+    const role = '' || 'EMPLOYEE'; // Replace with actual role from auth context
 
     const navItems = [
         { name: 'Dashboard', path: '/dashboard', icon: LayoutGridIcon },
