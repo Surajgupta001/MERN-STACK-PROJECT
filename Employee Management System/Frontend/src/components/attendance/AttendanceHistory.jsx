@@ -23,7 +23,7 @@ function AttendanceHistory({ history }) {
                     <tbody>
                         {history.length === 0 ? (
                             <tr>
-                                <td className='py-12 text-center text-slate-480'>
+                                <td colSpan={6} className='py-12 text-center text-slate-480'>
                                     No attendance records found.
                                 </td>
                             </tr>
