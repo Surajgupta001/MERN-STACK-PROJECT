@@ -40,7 +40,7 @@ function LeaveHistory({ leaves, isAdmin, onUpdate }) {
                                 return (
                                     <tr key={recId}>
                                         {isAdmin && (
-                                            <td className=' text-slate-900'>{leave.employee?.firstName}</td>
+                                            <td className=' text-slate-900'>{leave.employee?.firstName} {leave.employee?.lastName}</td>
                                         )}
                                         <td>
                                             <span className='badge bg-slate-100 text-slate-600'>{leave.type}</span>
