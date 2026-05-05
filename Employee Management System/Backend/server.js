@@ -7,6 +7,8 @@ import authRouter from './routes/auth.routes.js';
 import employeeRouter from './routes/employee.routes.js';
 import profileRouter from './routes/profile.routes.js';
 import attendanceRouter from './routes/attendance.routes.js';
+import leaveRouter from './routes/leave.routes.js';
+import payslipRouter from './routes/payslips.routes.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,6 +28,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/employees', employeeRouter);
 app.use('/api/v1/profile', profileRouter);
 app.use('/api/v1/attendance', attendanceRouter);
+app.use('/api/v1/leave', leaveRouter);
+app.use('/api/v1/payslips', payslipRouter);
 
 await connectDB();
 
