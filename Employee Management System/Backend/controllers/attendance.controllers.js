@@ -1,5 +1,5 @@
-import Attendance from "../models/attendance.models";
-import Employee from "../models/employee.models";
+import Attendance from "../models/attendance.models.js";
+import Employee from "../models/employee.models.js";
 
 // Clock in/out for employee
 // POST /api/v1/attendance/
