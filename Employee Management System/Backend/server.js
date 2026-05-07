@@ -9,6 +9,7 @@ import profileRouter from './routes/profile.routes.js';
 import attendanceRouter from './routes/attendance.routes.js';
 import leaveRouter from './routes/leave.routes.js';
 import payslipRouter from './routes/payslips.routes.js';
+import dashboardRouter from './routes/dashboard.routes.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,6 +31,7 @@ app.use('/api/v1/profile', profileRouter);
 app.use('/api/v1/attendance', attendanceRouter);
 app.use('/api/v1/leave', leaveRouter);
 app.use('/api/v1/payslips', payslipRouter);
+app.use('/api/v1/dashboard', dashboardRouter);
 
 await connectDB();
 
