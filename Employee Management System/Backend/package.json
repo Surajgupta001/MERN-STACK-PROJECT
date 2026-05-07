@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "server": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed": "node seed.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
