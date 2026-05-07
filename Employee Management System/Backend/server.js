@@ -10,9 +10,12 @@ import attendanceRouter from './routes/attendance.routes.js';
 import leaveRouter from './routes/leave.routes.js';
 import payslipRouter from './routes/payslips.routes.js';
 import dashboardRouter from './routes/dashboard.routes.js';
+import { serve } from "inngest/express";
+import { inngest, functions } from "./inngest/index.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
+
 
 // Middleware
 app.use(cors());
@@ -32,6 +35,9 @@ app.use('/api/v1/attendance', attendanceRouter);
 app.use('/api/v1/leave', leaveRouter);
 app.use('/api/v1/payslips', payslipRouter);
 app.use('/api/v1/dashboard', dashboardRouter);
+
+// Inngest route
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 await connectDB();
 
