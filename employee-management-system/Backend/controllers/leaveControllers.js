@@ -70,12 +70,16 @@ export const createLeave = async (req, res) => {
             status: "PENDING",
         });
 
-        await inngest.send({
-            name: 'leave/pending',
-            data: {
-                leaveApplicationId: leave._id,
-            }
-        })
+        try {
+            await inngest.send({
+                name: 'leave/pending',
+                data: {
+                    leaveApplicationId: leave._id,
+                }
+            });
+        } catch (inngestError) {
+            console.error("Failed to send leave pending event to Inngest:", inngestError);
+        }
 
         res.status(201).json({
             success: true,
@@ -96,7 +100,7 @@ export const createLeave = async (req, res) => {
 export const getLeaves = async (req, res) => {
     try {
         const session = req.session;
-        const isAdmin = session.roel === "ADMIN";
+        const isAdmin = session.role === "ADMIN";
 
         if (isAdmin) {
             const status = req.query.status;

@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Loader2Icon, LogInIcon, LogOutIcon } from 'lucide-react';
+import api from '../../api/axios';
+import { toast } from 'react-hot-toast';
 
 function CheckInButton({ todayRecord, onAction }) {
 
@@ -7,10 +9,14 @@ function CheckInButton({ todayRecord, onAction }) {
 
     const handleAttendance = async () => {
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await api.post('/attendance');
             onAction();
-        }, 1000);
+        } catch (error) {
+            console.error('Error updating attendance:', error);
+            toast.error(error.response?.data?.error || error.message || 'Failed to update attendance.');
+        } 
+        setLoading(false);
     };
 
     if (todayRecord?.checkOut) {
@@ -22,7 +28,7 @@ function CheckInButton({ todayRecord, onAction }) {
         )
     }
 
-    const isCheckedIn = !!todayRecord?.isCheckedIn;
+    const isCheckedIn = !!todayRecord?.checkIn;
 
     return (
         <div className='absolute flex flex-col bottom-4 right-4 z-1'>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { CalendarDays, FileText, Send, X } from 'lucide-react';
+import { CalendarDays, FileText, Loader2Icon, Send, X } from 'lucide-react';
+import api from '../../api/axios';
+import { toast } from 'react-hot-toast';
 
 function ApplyLeaveModal({ open, onClose, onSuccess }) {
 
@@ -12,6 +14,21 @@ function ApplyLeaveModal({ open, onClose, onSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            await api.post('/leave', data);
+            onSuccess();
+            onClose();
+            toast.success('Leave application submitted successfully!');
+        } catch (error) {
+            console.error('Error submitting leave application:', error);
+            toast.error(error.response?.data?.error || error.message || 'Failed to submit leave application.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (!open) return null;
@@ -67,7 +84,7 @@ function ApplyLeaveModal({ open, onClose, onSuccess }) {
                         <button onClick={onClose} type='button' className='flex-1 btn-secondary'>
                             Cancel
                         </button>
-                        <button onClick={onClose} disabled={loading} type='button' className='flex items-center justify-center flex-1 gap-2 btn-primary'>
+                        <button disabled={loading} type='submit' className='flex items-center justify-center flex-1 gap-2 btn-primary'>
                             {loading ? <Loader2Icon className='w-4 h-4 animate-spin' /> : <Send className='w-4 h-4' />}
                             {loading ? 'Submitting...' : 'Submit Application'}
                         </button>

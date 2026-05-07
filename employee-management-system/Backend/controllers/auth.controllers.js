@@ -88,7 +88,7 @@ export const login = async (req, res) => {
 export const getSession = async (req, res) => {
     try {
         const session = req.session;
-        if (!session || !session.user) {
+        if (!session || !session.userId) {
             return res
                 .status(401)
                 .json({
@@ -121,7 +121,7 @@ export const changePassword = async (req, res) => {
         const session = req.session;
         const { currentPassword, newPassword } = req.body;
 
-        if (currentPassword || !newPassword) {
+        if (!currentPassword || !newPassword) {
             return res
                 .status(400)
                 .json({
