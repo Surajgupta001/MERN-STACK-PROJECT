@@ -3,7 +3,7 @@ import { Lock } from 'lucide-react';
 import Loading from '../components/Loading';
 import ProfileForm from '../components/ProfileForm';
 import ChangePasswordModal from '../components/ChangePasswordModal';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import { toast } from 'react-hot-toast';
 

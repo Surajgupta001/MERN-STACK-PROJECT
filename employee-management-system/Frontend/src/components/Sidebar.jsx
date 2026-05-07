@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CalendarIcon, ChevronRightIcon, DollarSignIcon, FileTextIcon, LayoutGridIcon, Loader2, LogOutIcon, MenuIcon, Settings, UserIcon, XIcon } from 'lucide-react';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
 function Sidebar() {
@@ -93,8 +93,8 @@ function Sidebar() {
                         const isActive = pathname.startsWith(item.path);
                         return (
                             <Link key={item.name} to={item.path} className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-all duration-150 relative ${isActive ? 'bg-indigo-500/12 text-indigo-300' : 'text-slate-300 hover:text-white hover:bg-white/4'}`}>
-                                {isActive && <div className='absolute left-0 -translate-y-1/2 top-1/2 w-[3px] h-5 rounded-r-full bg-indigo-500' />}
-                                <item.icon className={`w-[17px] h-[17px] shrink-0 ${isActive ? 'text-indigo-300' : 'text-slate-400 group-hover:text-slate-300'}`} />
+                                {isActive && <div className='absolute left-0 -translate-y-1/2 top-1/2 w-0.75 h-5 rounded-r-full bg-indigo-500' />}
+                                <item.icon className={`w-4.25 h-4.25 shrink-0 ${isActive ? 'text-indigo-300' : 'text-slate-400 group-hover:text-slate-300'}`} />
                                 <span className='flex-1'>{item.name}</span>
                                 {isActive && <ChevronRightIcon className='w-3 h-3 text-indigo-500/50' />}
                             </Link>
@@ -105,7 +105,7 @@ function Sidebar() {
             {/* Lagout */}
             <div className='p-3 border-t border-white/6'>
                 <button onClick={handleLogout} className='flex items-center w-full gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/8 transition-all duration-150 cursor-pointer'>
-                    <LogOutIcon className='w-[17px] h-[17px]' />
+                    <LogOutIcon className='w-4.25 h-4.25' />
                     <span>Log out</span>
                 </button>
             </div>
@@ -122,7 +122,7 @@ function Sidebar() {
             {mobileOpen && <div onClick={() => setMobileOpen(false)} className='fixed inset-0 z-40 bg-black/60 lg:hidden backdrop-blur-sm' />}
 
             {/* Sidebar - desktop */}
-            <aside className='hidden lg:flex flex-col h-full w-[260px] bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/4'>
+            <aside className='hidden lg:flex flex-col h-full w-65 bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white shrink-0 border-r border-white/4'>
                 {sidebarContent}
             </aside>
 

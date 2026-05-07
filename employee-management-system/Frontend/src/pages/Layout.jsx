@@ -1,7 +1,7 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import Loading from '../components/Loading';
 
 function Layout() {
