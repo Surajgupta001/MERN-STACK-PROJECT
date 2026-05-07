@@ -294,6 +294,97 @@ A modern social app featuring profiles, connections, feeds, and real‑time mess
 
 Docs: See project folders under `social-media-app/` (Backend and Frontend READMEs if present).
 
+### 10) QuickEMS - Employee Management System (`employee-management-system/`)
+
+**Overview:** A state-of-the-art Employee Management System featuring secure dual-portal access (Admin & Employee), real-time attendance logs with click-and-track Check-In/Check-Out, leave application workflows, and monthly payroll/payslip generation with high-fidelity styled PDF printing.
+
+**Key Features:**
+
+- Secure portal landing selection with JWT-based session and password management
+- Admin Dashboard with live corporate overview metrics (active workforce count, leaves, attendance today)
+- Full Employee directory with soft-deactivation support
+- Dual-role leave processing (submit, approve, reject leaves)
+- Dynamic check-in/out attendance logging with automatic duration tracking
+- Monthly payroll generation and high-fidelity, printable PDF payslip summaries
+- Profile personalizations with persistent Bio customization for both Employees and Admins
+
+**Backend Technologies:**
+
+- Node.js + Express.js, MongoDB + Mongoose ODM
+- JWT authentication, role-based route protection middlewares
+- Inngest background event processing engine (auto check-out, reminders, cron cruds)
+- Nodemailer with Brevo (Sendinblue) SMTP relays and sender failover support
+
+**Frontend Technologies:**
+
+- React + Vite, React Router, Context API (`AuthContext`)
+- Tailwind CSS, Vanilla CSS custom fluid animations, Lucide React icons
+- Axios with automated JWT request interceptor, React Hot Toast
+
+Docs: `employee-management-system/Backend/README.md`, `employee-management-system/Frontend/README.md`
+
+### 11) LMS - Learning Management System (`LMS/`)
+
+**Overview:** A comprehensive education platform featuring dual student and educator portals. It handles course management, progress tracking, rich-text lessons, and secure payments for enrolling in certified courses.
+
+**Key Features:**
+
+- Separate portals for Students and Educators
+- Course creation with full module and dynamic lesson structures
+- Rich-text lesson editing with Quill.js
+- Dynamic video lessons powered by YouTube embed players
+- Secure payment integration with Stripe to purchase and enroll in courses
+- Progress tracking with automatic certificate generation upon course completion
+- Clerk authentication for secure patient/user sessions
+
+**Backend Technologies:**
+
+- Node.js + Express.js, MongoDB + Mongoose ODM
+- Clerk Express SDK for user authentication
+- Cloudinary for secure file storage
+- Multer for handling file uploads
+- Stripe integration for payments
+- Svix for webhook management
+
+**Frontend Technologies:**
+
+- React + Vite, React Router, TailwindCSS v3
+- Clerk React SDK for state management
+- Quill.js, RC-Progress for progress displays
+- React Simple Star Rating, React Youtube players
+
+Docs: `LMS/Backend/README.md`, `LMS/Frontend/README.md`
+
+### 12) Social Media Marketplace (`Social-Media-Marketplace/`)
+
+**Overview:** A premium, real-time social marketplace where users can connect, post classified item listings, exchange instant messages via WebSockets, and process orders over a relational Postgres database using Prisma.
+
+**Key Features:**
+
+- Detailed classified marketplace with active categories and filters
+- Item listing creation with multiple image uploads via ImageKit
+- Real-time chatting and instant messaging utilizing secure WebSockets
+- Order management with real-time status updates (pending, confirmed, delivered)
+- Secure Clerk-based session authentication
+- Serverless Postgres database integration with Neon and Prisma ORM
+
+**Backend Technologies:**
+
+- Node.js + Express.js, Postgres with Prisma ORM
+- Clerk Express for secure routing
+- ImageKit Node.js SDK for cloud image hosting
+- WebSockets (`ws`) for real-time instant messaging
+- Inngest background event processing engine
+
+**Frontend Technologies:**
+
+- React + Vite, React Router DOM, Redux Toolkit
+- Tailwind CSS v4, Lucide React icons
+- Axios for secure network calls
+- React Hot Toast for modern notification triggers
+
+Docs: `Social-Media-Marketplace/Backend/README.md`, `Social-Media-Marketplace/Frontend/README.md`
+
 ## 🚀 Common Technologies Across Projects
 
 ### Backend (Shared Across Many Projects)
@@ -342,6 +433,15 @@ MERN STACK PROJECT/
     ├── Admin/
     ├── Backend/
     └── Frontend/
+├── employee-management-system/
+│   ├── Backend/
+│   └── Frontend/
+├── LMS/
+│   ├── Backend/
+│   └── Frontend/
+├── Social-Media-Marketplace/
+│   ├── Backend/
+│   └── Frontend/
 └── social-media-app/
     ├── Backend/
     └── Frontend/
