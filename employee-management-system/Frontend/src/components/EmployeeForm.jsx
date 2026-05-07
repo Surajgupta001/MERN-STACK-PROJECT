@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DEPARTMENTS } from '../assets/assets';
 import { Loader2Icon } from 'lucide-react';
+import api from '../api/axios';
+import { toast } from 'react-hot-toast';
 
 function EmployeeForm({ initialData, onSuccess, onCancel }) {
 
@@ -11,6 +13,27 @@ function EmployeeForm({ initialData, onSuccess, onCancel }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.currentTarget);
+        if (isEditMode) {
+            const pwd = formData.get('password');
+            if (!pwd) {
+                formData.delete('password');
+            }
+        }
+
+        try {
+            const url = isEditMode ? `/employees/${initialData.id}` : '/employees';
+            const method = isEditMode ? 'put' : 'post';
+            await api[method](url, formData);
+            onSuccess ? onSuccess() : navigate('/employees');
+            toast.success(`Employee ${isEditMode ? 'updated' : 'created'} successfully!`);
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            toast.error(error.response?.data.error || error.message || 'Failed to submit form.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

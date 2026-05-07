@@ -40,7 +40,7 @@ export const getDashboard = async (req, res) => {
                 });
         } else {
             const employee = await Employee.findOne({
-                user: session.userId,
+                userId: session.userId,
             }).lean();
 
             if (!employee) {

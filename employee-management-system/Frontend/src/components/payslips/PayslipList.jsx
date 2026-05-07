@@ -19,7 +19,7 @@ function PayslipList({ payslips, isAdmin }) {
                     <tbody>
                         {payslips.length === 0 ? (
                             <tr>
-                                <td colSpan={isAdmin ? 5 : 4} className='py-12 text-center text-slate-480'>
+                                <td colSpan={isAdmin ? 5 : 4} className='py-12 text-center text-slate-400'>
                                     No payslips found.
                                 </td>
                             </tr>

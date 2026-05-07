@@ -1,5 +1,6 @@
 import { Loader2, Save, User } from 'lucide-react';
 import React, { useState } from 'react'
+import api from '../api/axios';
 
 function ProfileForm({ initialData, onSuccess }) {
 
@@ -9,6 +10,19 @@ function ProfileForm({ initialData, onSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError("");
+        setMessage("");
+        const formData = new FormData(e.currentTarget);
+        try {
+            await api.post('/profile', formData);
+            setMessage("Profile updated successfully!");
+            onSuccess?.();
+        } catch (error) {
+            setError(error.response?.data?.error || error.message || 'Failed to update profile.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -18,16 +32,14 @@ function ProfileForm({ initialData, onSuccess }) {
             </h2>
             {error && (
                 <div className='flex items-start gap-3 p-4 mb-6 text-sm border rounded-xl bg-rose-50 text-rose-700 border-rose-200'>
-                    <div className='w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0'>
-                        {error}
-                    </div>
+                    <div className='w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0' />
+                    <span>{error}</span>
                 </div>
             )}
             {message && (
                 <div className='flex items-start gap-3 p-4 mb-6 text-sm border rounded-xl bg-emerald-50 text-emerald-700 border-emerald-200'>
-                    <div className='w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0'>
-                        {message}
-                    </div>
+                    <div className='w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0' />
+                    <span>{message}</span>
                 </div>
             )}
             <div className='space-y-5'>
@@ -47,7 +59,7 @@ function ProfileForm({ initialData, onSuccess }) {
                 </div>
                 <div>
                     <label className='block mb-2 text-sm font-medium text-slate-700'>Bio</label>
-                    <textarea disabled={initialData.isDeleted} name='bio' defaultValue={initialData.bio || ''} placeholder='Write a brief bio...' className={`resize-none ${initialData.isDeleted ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''}`} />
+                    <textarea key={initialData.bio || ''} disabled={initialData.isDeleted} name='bio' defaultValue={initialData.bio || ''} placeholder='Write a brief bio...' className={`resize-none ${initialData.isDeleted ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : ''}`} />
                     <p className='text-xs text-slate-400 mt-1.5'>This will be displayed on your profile</p>
                 </div>
                 {initialData.isDeleted ? (

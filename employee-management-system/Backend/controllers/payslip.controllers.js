@@ -115,7 +115,7 @@ export const getPayslips = async (req, res) => {
 // GET /api/v1/payslip/:id
 export const getPayslipById = async (req, res) => {
     try {
-        const payslips = await Payslip.findById(req.params.id).populate("employeeId");
+        const payslips = await Payslip.findById(req.params.id).populate("employeeId").lean();
 
         if (!payslips) {
             return res

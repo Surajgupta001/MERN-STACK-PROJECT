@@ -1,5 +1,7 @@
 import { Loader2Icon, LockIcon, X } from 'lucide-react';
 import React, { useState } from 'react'
+import api from '../api/axios';
+import { toast } from 'react-hot-toast';
 
 function ChangePasswordModal({ open, onClose }) {
 
@@ -8,6 +10,29 @@ function ChangePasswordModal({ open, onClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMessage({ type: '', text: '' });
+        const formData = new FormData(e.currentTarget);
+        const currentPassword = formData.get('currentPassword');
+        const newPassword = formData.get('newPassword');
+
+        try {
+            const { data } = await api.post('/auth/change-password', {
+                currentPassword,
+                newPassword
+            });
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to change password.');
+            }
+            setMessage({ type: 'success', text: 'Password updated successfully! Please log in again with your new password.' });
+            e.target.reset()
+            toast.success('Password updated successfully! Please log in again with your new password.');
+            onClose();
+        } catch (error) {
+            setMessage({ type: 'error', text: error.response.data.message });
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (!open) return null;

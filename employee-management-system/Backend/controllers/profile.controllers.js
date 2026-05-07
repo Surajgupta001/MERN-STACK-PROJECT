@@ -1,4 +1,5 @@
 import Employee from "../models/employee.models.js";
+import User from "../models/user.models.js";
 
 // Get Profile
 // GET /api/v1/profile
@@ -10,6 +11,7 @@ export const getProfile = async (req, res) => {
         });
 
         if (!employee) {
+            const user = await User.findById(session.userId);
             // Authenticated user is not an employee - return admin profile
             return res
                 .status(200)
@@ -17,6 +19,7 @@ export const getProfile = async (req, res) => {
                     firstName: 'Admin',
                     lastName: '',
                     email: session.email,
+                    bio: user?.bio || "",
                 });
         }
 
@@ -49,11 +52,14 @@ export const updateProfile = async (req, res) => {
         });
 
         if (!employee) {
+            await User.findByIdAndUpdate(session.userId, {
+                bio: req.body.bio
+            });
             return res
-                .status(404)
+                .status(200)
                 .json({
-                    success: false,
-                    message: "Employee profile not found",
+                    success: true,
+                    message: "Profile updated successfully",
                 });
         }
 

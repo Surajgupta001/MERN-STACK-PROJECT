@@ -1,5 +1,7 @@
 import { Loader2, Plus, X } from 'lucide-react';
 import React, { useState } from 'react'
+import api from '../../api/axios';
+import { toast } from 'react-hot-toast';
 
 function GeneratePayslipsForm({ employees, onSuccess }) {
 
@@ -16,6 +18,20 @@ function GeneratePayslipsForm({ employees, onSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            await api.post('/payslips', data);
+            setIsOpen(false);
+            onSuccess();
+            toast.success('Payslip generated successfully!');
+        } catch (error) {
+            console.error('Error generating payslip:', error);
+            toast.error(error.response?.data?.error || error.message || 'Failed to generate payslip.');
+        }
+        setLoading(false);
     };
 
     return (

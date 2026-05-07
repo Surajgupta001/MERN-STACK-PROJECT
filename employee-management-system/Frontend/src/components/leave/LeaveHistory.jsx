@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import { Check, Loader2, X } from 'lucide-react';
 import React, { useState } from 'react'
+import api from '../../api/axios';
+import { toast } from 'react-hot-toast';
 
 function LeaveHistory({ leaves, isAdmin, onUpdate }) {
 
@@ -8,8 +10,16 @@ function LeaveHistory({ leaves, isAdmin, onUpdate }) {
 
     const handleStatusUpdate = async (id, status) => {
         setProcessing(id);
-        await onUpdate?.(id, status);
-        setProcessing(null);
+        try {
+            await api.patch(`/leave/${id}`, { status });
+            onUpdate();
+            toast.success('Leave status updated successfully!');
+        } catch (error) {
+            console.error('Error updating leave status:', error);
+            toast.error(error.response?.data?.error || error.message || 'Failed to update leave status.');
+        } finally {
+            setProcessing(null);
+        }
     };
 
     return (
@@ -29,7 +39,7 @@ function LeaveHistory({ leaves, isAdmin, onUpdate }) {
                     <tbody>
                         {leaves.length === 0 ? (
                             <tr>
-                                <td colSpan={isAdmin ? 6 : 4} className='py-12 text-center text-slate-480'>
+                                <td colSpan={isAdmin ? 6 : 4} className='py-12 text-center text-slate-400'>
                                     No leave applications found.
                                 </td>
                             </tr>

@@ -8,7 +8,7 @@ export const clockInOut = async (req, res) => {
     try {
         const session = req.session;
         const employee = await Employee.findOne({
-            useId: session.userId,
+            userId: session.userId,
         });
 
         if (!employee) {
@@ -49,13 +49,17 @@ export const clockInOut = async (req, res) => {
                 status: isLate ? "LATE" : "PRESENT",
             });
 
-            await inngest.send({
-                name: "employee/check-out",
-                data: {
-                    employeeId: employee._id,
-                    attendanceId: attendance._id,
-                }
-            })
+            try {
+                await inngest.send({
+                    name: "employee/check-out",
+                    data: {
+                        employeeId: employee._id,
+                        attendanceId: attendance._id,
+                    }
+                });
+            } catch (inngestError) {
+                console.error("Failed to send check-out event to Inngest:", inngestError);
+            }
 
             return res
                 .status(201)
@@ -122,7 +126,7 @@ export const getAttendance = async (req, res) => {
     try {
         const session = req.session;
         const employee = await Employee.findOne({
-            useId: session.userId,
+            userId: session.userId,
         });
 
         if (!employee) {
