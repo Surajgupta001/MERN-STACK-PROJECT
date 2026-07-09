@@ -1,7 +1,8 @@
 import "dotenv/config";
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from "cors";
 import connectDB from "./config/database.js";
+import authRouter from "./routes/auth.routes.js";
 
 const app = express();
 connectDB();
@@ -14,6 +15,19 @@ const port = process.env.PORT || 3000;
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Server is Live!');
+});
+
+// API ROUTES
+app.use('/api/v1/auth', authRouter);
+
+// Global Error Handler
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('Unhandled Error:', err);
+    res.status(500).json({
+        success: false,
+        message: err.message || 'Server Error',
+        stack: process.env.NODE_ENV === 'production' ? undefined : err.stack
+    });
 });
 
 app.listen(port, () => {
