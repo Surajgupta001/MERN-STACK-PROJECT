@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import cors from "cors";
 import connectDB from "./config/database.js";
 import authRouter from "./routes/auth.routes.js";
+import restaurantRouter from "./routes/restaurant.routes.js";
 
 const app = express();
 connectDB();
@@ -19,6 +20,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // API ROUTES
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/restaurants', restaurantRouter);
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
