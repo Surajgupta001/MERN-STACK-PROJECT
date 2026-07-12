@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { protect } from "../middlewares/auth.middleware.js";
+import { cancelBooking, createBooking, getMyBookings } from "../controllers/booking.controllers.js";
+
+const bookingRouter = Router();
+
+bookingRouter.post('/', protect, createBooking);
+bookingRouter.get('/my', protect, getMyBookings);
+bookingRouter.put('/:id/cancel', protect, cancelBooking);
+
+export default bookingRouter;
