@@ -5,6 +5,7 @@ import connectDB from "./config/database.js";
 import authRouter from "./routes/auth.routes.js";
 import restaurantRouter from "./routes/restaurant.routes.js";
 import bookingRouter from "./routes/booking.routes.js";
+import ownerRouter from "./routes/owner.routes.js";
 
 const app = express();
 connectDB();
@@ -23,6 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/restaurants', restaurantRouter);
 app.use('/api/v1/bookings', bookingRouter);
+app.use('/api/v1/owner', ownerRouter);
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
