@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Upload, Image } from "lucide-react";
-import { dummyRestaurant } from "../../assets/assets.ts";
+import api from "../../lib/api.ts";
 
 interface OwnerProfileDetailsProps {
     restaurant: any;
@@ -93,7 +93,13 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
             if (imageFile) {
                 formData.append("image", imageFile);
             }
-            setRestaurant(dummyRestaurant[0]);
+
+            const res = await api.put("/owner/restaurant", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            setRestaurant(res.data.updated);
             toast.success("Profile details updated successfully!");
         } catch (error: any) {
             toast.error(error?.response?.data?.message || "Update failed");
@@ -103,13 +109,13 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
     };
 
     return (
-        <div className="bg-white border border-outline-variant/20 p-6 md:p-8 rounded-md shadow-sm space-y-6 text-left">
-            <h3 className="font-display text-lg font-medium text-primary border-b border-outline-variant/10 pb-4">
+        <div className="p-6 space-y-6 text-left bg-white border rounded-md shadow-sm border-outline-variant/20 md:p-8">
+            <h3 className="pb-4 text-lg font-medium border-b font-display text-primary border-outline-variant/10">
                 Update Profile & Capacity
             </h3>
 
             <form onSubmit={handleUpdateRestaurant} className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-1">
                         <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Restaurant Name</label>
                         <input
@@ -139,22 +145,22 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
                         rows={4}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full bg-surface-container-low/30 border border-outline-variant/40 p-3 text-xs focus:border-secondary focus:outline-none rounded-sm"
+                        className="w-full p-3 text-xs border rounded-sm bg-surface-container-low/30 border-outline-variant/40 focus:border-secondary focus:outline-none"
                     ></textarea>
                 </div>
 
                 {/* Cover Image Upload */}
                 <div className="space-y-1">
                     <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Restaurant Cover Image</label>
-                    <div className="flex flex-col md:flex-row gap-4 items-center bg-surface-container-low/30 border border-outline-variant/40 p-4 rounded-sm">
-                        <div className="relative w-32 h-24 bg-surface border border-outline-variant/30 rounded-sm overflow-hidden shrink-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-4 p-4 border rounded-sm md:flex-row bg-surface-container-low/30 border-outline-variant/40">
+                        <div className="relative flex items-center justify-center w-32 h-24 overflow-hidden border rounded-sm bg-surface border-outline-variant/30 shrink-0">
                             {imagePreview ? (
-                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                <img src={imagePreview} alt="Preview" className="object-cover w-full h-full" />
                             ) : (
                                 <Image size={24} className="text-black/30" />
                             )}
                         </div>
-                        <div className="grow space-y-2 text-center md:text-left w-full">
+                        <div className="w-full space-y-2 text-center grow md:text-left">
                             <p className="text-[11px] text-black/55 leading-relaxed">
                                 Upload a high-resolution banner photo for your restaurant page. Supports JPG, PNG.
                             </p>
@@ -168,7 +174,7 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="space-y-1">
                         <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Price Range</label>
                         <select
@@ -207,7 +213,7 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-1">
                         <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Address</label>
                         <input
@@ -250,11 +256,10 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
                                     key={slot}
                                     type="button"
                                     onClick={() => toggleSlot(slot)}
-                                    className={`py-1.5 px-3 text-[10px] border transition-colors cursor-pointer rounded-sm ${
-                                        isSelected
+                                    className={`py-1.5 px-3 text-[10px] border transition-colors cursor-pointer rounded-sm ${isSelected
                                             ? "bg-primary border-primary text-white"
                                             : "border-outline-variant/40 text-black/55 hover:border-primary"
-                                    }`}
+                                        }`}
                                 >
                                     {slot}
                                 </button>

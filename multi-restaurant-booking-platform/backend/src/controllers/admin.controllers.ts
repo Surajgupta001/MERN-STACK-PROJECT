@@ -28,7 +28,7 @@ export const getAllRestaurants = async (req: AuthRequest, res: Response): Promis
 };
 
 // Approve/reject a restaurant profile
-// GET /api/v1/admin/restaurants/:id/approve
+// PUT /api/v1/admin/restaurants/:id/approve
 export const approveRestaurant = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { status } = req.body;
@@ -94,18 +94,20 @@ export const getAdminStats = async (req: AuthRequest, res: Response): Promise<vo
             .status(200)
             .json({
                 success: true,
-                users: {
-                    totalusers,
-                    totalOwners,
-                    total: totalusers + totalOwners
-                },
-                restaurants: {
-                    total: totalrestaurants
-                },
-                bookings: {
-                    total: totalbookings,
-                },
-                latestBookings
+                stats: {
+                    users: {
+                        totalUsers: totalusers,
+                        totalOwners,
+                        total: totalusers + totalOwners
+                    },
+                    restaurants: {
+                        total: totalrestaurants
+                    },
+                    bookings: {
+                        total: totalbookings,
+                    },
+                    latestBookings
+                }
             });
     } catch (error: any) {
         console.error(error);

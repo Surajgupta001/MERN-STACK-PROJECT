@@ -80,6 +80,8 @@ export const createBooking = async (req: AuthRequest, res: Response): Promise<vo
             status: 'confirmed',
         });
 
+        await booking.save();
+
         // Poplate restaurant info before returning the response
         const populationBooking = await booking.populate('restaurant', 'name location image address');
         

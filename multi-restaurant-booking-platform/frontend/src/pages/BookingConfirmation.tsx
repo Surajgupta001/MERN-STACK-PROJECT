@@ -10,7 +10,7 @@ import Loader from "../components/Loader.tsx";
 import BookingSuccess from "../components/booking/BookingSuccess.tsx";
 import BookingSummary from "../components/booking/BookingSummary.tsx";
 import BookingForm from "../components/booking/BookingForm.tsx";
-import { dummyBookingData, dummyRestaurant } from "../assets/assets.ts";
+import api from "../lib/api.ts";
 
 export default function BookingConfirmation() {
     const { slug } = useParams<{ slug: string }>();
@@ -48,8 +48,16 @@ export default function BookingConfirmation() {
 
     useEffect(() => {
         const fetchRestaurant = async () => {
-            setRestaurant(dummyRestaurant.find((r) => r.slug === slug));
-            setLoading(false);
+            try {
+                setLoading(true);
+                const res = await api.get(`/restaurants/${slug}`);
+                setRestaurant(res.data.restaurant);
+            } catch (error: any) {
+                toast.error(error?.response?.data?.message || error?.message);
+                navigate("/");
+            } finally {
+                setLoading(false);
+            }
         };
 
         if (slug) {
@@ -73,7 +81,15 @@ export default function BookingConfirmation() {
 
         try {
             setConfirming(true);
-            setConfirmedBooking(dummyBookingData);
+            const res = await api.post("/bookings", {
+                restaurantId: restaurant._id,
+                date,
+                time: slot,
+                guests,
+                occasion,
+                specialRequests,
+            })
+            setConfirmedBooking(res.data.populationBooking);
             toast.success("Reservation confirmed!");
         } catch (error: any) {
             toast.error(error?.response?.data?.message || error?.message);
@@ -85,9 +101,9 @@ export default function BookingConfirmation() {
     // Render Success Screen
     if (confirmedBooking) {
         return (
-            <div className="min-h-screen bg-surface flex flex-col pt-20">
+            <div className="flex flex-col min-h-screen pt-20 bg-surface">
                 <Navbar />
-                <main className="grow flex items-center justify-center py-12 px-6">
+                <main className="flex items-center justify-center px-6 py-12 grow">
                     <BookingSuccess confirmedBooking={confirmedBooking} restaurant={restaurant} date={date} slot={slot} guests={guests} />
                 </main>
                 <Footer />
@@ -96,21 +112,21 @@ export default function BookingConfirmation() {
     }
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col pt-20">
+        <div className="flex flex-col min-h-screen pt-20 bg-surface">
             <Navbar />
 
             {/* Main Booking Content */}
-            <main className="grow max-w-7xl w-full mx-auto px-6 md:px-10 py-12">
+            <main className="w-full px-6 py-12 mx-auto grow max-w-7xl md:px-10">
                 {/* Progress bar header */}
-                <div className="flex items-center gap-2 mb-10 pb-4 border-b border-outline-variant/10 text-xs text-black/55">
-                    <Link to={`/restaurant/${restaurant.slug}`} className="hover:text-primary transition-colors">
+                <div className="flex items-center gap-2 pb-4 mb-10 text-xs border-b border-outline-variant/10 text-black/55">
+                    <Link to={`/restaurant/${restaurant.slug}`} className="transition-colors hover:text-primary">
                         {restaurant.name}
                     </Link>
                     <ChevronRight size={14} />
                     <span className="text-primary">Details & Confirmation</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                <div className="grid items-start grid-cols-1 gap-10 lg:grid-cols-12">
                     {/* Left Column (Reservation Summary) */}
                     <div className="lg:col-span-5">
                         <BookingSummary restaurant={restaurant} date={date} slot={slot} guests={guests} />
