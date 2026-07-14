@@ -10,7 +10,8 @@ import PendingApproval from "../../components/owner/PendingApproval.tsx";
 import RequestRejected from "../../components/owner/RequestRejected.tsx";
 import OwnerBookings from "../../components/owner/OwnerBookings.tsx";
 import OwnerProfileDetails from "../../components/owner/OwnerProfileDetails.tsx";
-import { dummyMyBookingsData, dummyRestaurant } from "../../assets/assets.ts";
+import api from "../../lib/api.ts";
+import toast from "react-hot-toast";
 
 export default function OwnerDashboard() {
     const { logout } = useAppContext();
@@ -20,9 +21,21 @@ export default function OwnerDashboard() {
     const [activeTab, setActiveTab] = useState<"bookings" | "details">("bookings");
 
     const fetchOwnerData = async () => {
-        setRestaurant(dummyRestaurant[0]);
-        setBookings(dummyMyBookingsData);
-        setLoading(false);
+        try {
+            const res = await api.get("/owner/restaurant");
+            setRestaurant(res.data.restaurant);
+
+            if (res.data.restaurant) {
+                if (res.data.restaurant.status === "approved") {
+                    const bookingsRes = await api.get('/owner/bookings');
+                    setBookings(bookingsRes.data.bookings);
+                }
+            }
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message || error?.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -34,14 +47,14 @@ export default function OwnerDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col pt-20">
+        <div className="flex flex-col min-h-screen pt-20 bg-surface">
             <Navbar />
 
-            <main className="grow max-w-7xl w-full mx-auto px-6 md:px-10 py-12">
+            <main className="w-full px-6 py-12 mx-auto grow max-w-7xl md:px-10">
                 {/* Heading */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-outline-variant/10 pb-8 mb-8">
+                <div className="flex flex-col items-start justify-between gap-4 pb-8 mb-8 border-b md:flex-row md:items-center border-outline-variant/10">
                     <div>
-                        <h1 className="font-display text-2xl md:text-3xl text-primary">Restaurant Portal</h1>
+                        <h1 className="text-2xl font-display md:text-3xl text-primary">Restaurant Portal</h1>
                         <p className="text-xs text-black/55 mt-1.5">Review capacity limits and process live reservations.</p>
                     </div>
                     <button
@@ -63,15 +76,15 @@ export default function OwnerDashboard() {
                     <RequestRejected restaurantName={restaurant.name} />
                 ) : (
                     /* Case 4: Approved - Full Dashboard Panel */
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
                         {/* Left Tab selector sidebar */}
-                        <aside className="lg:col-span-3 space-y-6 bg-white border border-outline-variant/20 p-6 rounded-md shadow-sm h-fit">
+                        <aside className="p-6 space-y-6 bg-white border rounded-md shadow-sm lg:col-span-3 border-outline-variant/20 h-fit">
                             <div className="flex items-center gap-3.5 border-b border-outline-variant/10 pb-5">
-                                <span className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-medium text-base">
+                                <span className="flex items-center justify-center w-12 h-12 text-base font-medium rounded-full bg-primary/10 text-primary">
                                     {restaurant.name.charAt(0)}
                                 </span>
                                 <div>
-                                    <h4 className="font-display font-medium text-primary text-base line-clamp-1">{restaurant.name}</h4>
+                                    <h4 className="text-base font-medium font-display text-primary line-clamp-1">{restaurant.name}</h4>
                                     <span className="text-[9px] text-secondary tracking-widest uppercase bg-secondary-container/20 px-2 py-0.5 rounded-sm inline-block mt-0.5">
                                         APPROVED
                                     </span>
@@ -102,7 +115,7 @@ export default function OwnerDashboard() {
                         </aside>
 
                         {/* Content Area */}
-                        <div className="lg:col-span-9 space-y-8">
+                        <div className="space-y-8 lg:col-span-9">
                             {/* Tab 1: Bookings List */}
                             {activeTab === "bookings" && (
                                 <OwnerBookings bookings={bookings} setBookings={setBookings} totalSeats={restaurant.totalSeats} />

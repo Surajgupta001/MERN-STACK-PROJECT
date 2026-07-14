@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Utensils, Upload, Image } from "lucide-react";
 import toast from "react-hot-toast";
-import { dummyRestaurant } from "../../assets/assets.ts";
+import api from "../../lib/api.ts";
 
 interface RestaurantWizardProps {
     setRestaurant: (restaurant: any) => void;
@@ -85,8 +85,19 @@ export default function RestaurantWizard({ setRestaurant }: RestaurantWizardProp
                 formData.append("image", imageFile);
             }
 
-            setRestaurant(dummyRestaurant[0]);
-            toast.success("Restaurant profile submitted successfully! Awaiting Admin approval.");
+            try {
+                const res = await api.post("/owner/restaurant", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
+                setRestaurant(res.data.newRestaurant);
+                toast.success("Restaurant profile submitted successfully! Awaiting Admin approval.");
+            } catch (error: any) {
+                toast.error(error?.response?.data?.message || "Failed to register restaurant");
+            } finally {
+                setFormLoading(false);
+            }
         } catch (error: any) {
             toast.error(error?.response?.data?.message || "Failed to register restaurant");
         } finally {
@@ -95,17 +106,17 @@ export default function RestaurantWizard({ setRestaurant }: RestaurantWizardProp
     };
 
     return (
-        <div className="max-w-2xl mx-auto bg-white border border-outline-variant/20 p-8 md:p-10 shadow-sm rounded-md space-y-6">
-            <div className="text-center space-y-2 pb-6 border-b border-outline-variant/10">
+        <div className="max-w-2xl p-8 mx-auto space-y-6 bg-white border rounded-md shadow-sm border-outline-variant/20 md:p-10">
+            <div className="pb-6 space-y-2 text-center border-b border-outline-variant/10">
                 <Utensils size={36} className="mx-auto text-secondary" />
-                <h2 className="font-display text-xl font-medium text-primary">Setup Restaurant Profile</h2>
+                <h2 className="text-xl font-medium font-display text-primary">Setup Restaurant Profile</h2>
                 <p className="text-xs text-black/55">
                     Please create your restaurant details. Once submitted, it will be pending approval from the Admin.
                 </p>
             </div>
 
             <form onSubmit={handleCreateRestaurant} className="space-y-5 text-left">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-1">
                         <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Restaurant Name</label>
                         <input
@@ -138,22 +149,22 @@ export default function RestaurantWizard({ setRestaurant }: RestaurantWizardProp
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Describe the gastronomical experience, atmosphere, and dining philosophy..."
-                        className="w-full bg-surface-container-low/30 border border-outline-variant/40 p-3 text-xs focus:border-secondary focus:outline-none rounded-sm"
+                        className="w-full p-3 text-xs border rounded-sm bg-surface-container-low/30 border-outline-variant/40 focus:border-secondary focus:outline-none"
                     ></textarea>
                 </div>
 
                 {/* Cover Image Upload */}
                 <div className="space-y-1">
                     <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Restaurant Cover Image</label>
-                    <div className="flex flex-col md:flex-row gap-4 items-center bg-surface-container-low/30 border border-outline-variant/40 p-4 rounded-sm">
-                        <div className="relative w-32 h-24 bg-surface border border-outline-variant/30 rounded-sm overflow-hidden shrink-0 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-4 p-4 border rounded-sm md:flex-row bg-surface-container-low/30 border-outline-variant/40">
+                        <div className="relative flex items-center justify-center w-32 h-24 overflow-hidden border rounded-sm bg-surface border-outline-variant/30 shrink-0">
                             {imagePreview ? (
-                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                <img src={imagePreview} alt="Preview" className="object-cover w-full h-full" />
                             ) : (
                                 <Image size={24} className="text-black/30" />
                             )}
                         </div>
-                        <div className="grow space-y-2 text-center md:text-left w-full">
+                        <div className="w-full space-y-2 text-center grow md:text-left">
                             <p className="text-[11px] text-black/55 leading-relaxed">
                                 Upload a high-resolution banner photo for your restaurant page. Supports JPG, PNG.
                             </p>
@@ -167,7 +178,7 @@ export default function RestaurantWizard({ setRestaurant }: RestaurantWizardProp
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="space-y-1">
                         <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Price Range</label>
                         <select
@@ -207,7 +218,7 @@ export default function RestaurantWizard({ setRestaurant }: RestaurantWizardProp
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-1">
                         <label className="block text-[10px] font-medium text-black/55 tracking-wider uppercase">Address</label>
                         <input

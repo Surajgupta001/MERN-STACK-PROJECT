@@ -74,8 +74,8 @@ export const getFeaturedRestaurants = async (req: Request, res: Response): Promi
         const featured = await RestaurantModel.find({
             status: 'approved',
             $or: [
-                { isFeatured: true },
-                { isExclusive: true }
+                { featured: true },
+                { exclusive: true }
             ]
         }).limit(6);
 
@@ -167,13 +167,13 @@ export const getRestaurantBySlug = async (req: Request, res: Response): Promise<
 // Get /api/v1/restaurants/:id/availability
 export const getRestaurantAvailability = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { data } = req.query;
-        if (!data) {
+        const { date } = req.query;
+        if (!date) {
             res
                 .status(400)
                 .json({
                     success: false,
-                    message: 'Missing required query parameter: data'
+                    message: 'Missing required query parameter: date'
                 });
             return;
         }
@@ -189,7 +189,7 @@ export const getRestaurantAvailability = async (req: Request, res: Response): Pr
             return;
         }
 
-        const bookingDate = new Date(data as string);
+        const bookingDate = new Date(date as string);
 
         // Get all active booking on this date for the restaurant
         const bookings = await BookingModel.find({

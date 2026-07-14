@@ -11,7 +11,7 @@ import RestaurantHero from "../components/restaurant/RestaurantHero.tsx";
 import RestaurantInfo from "../components/restaurant/RestaurantInfo.tsx";
 import RestaurantReviews from "../components/restaurant/RestaurantReviews.tsx";
 import BookingWidget from "../components/restaurant/BookingWidget.tsx";
-import { dummyAvailability, dummyRestaurant } from "../assets/assets.ts";
+import api from "../lib/api.ts";
 
 export default function RestaurantDetail() {
     const { slug } = useParams<{ slug: string }>();
@@ -30,8 +30,20 @@ export default function RestaurantDetail() {
 
     useEffect(() => {
         const fetchRestaurant = async () => {
-            setRestaurant(dummyRestaurant.find((r) => r.slug === slug));
-            setLoading(false);
+            try {
+                setLoading(true);
+                const res = await api.get(`/restaurants/${slug}`);
+                setRestaurant(res.data.restaurant);
+
+                // Initialize booking value
+                const today = new Date();
+                setSelectedDate(today.toISOString().split("T")[0]);
+            } catch (error: any) {
+                toast.error(error?.response?.data?.message || error?.message);
+                navigate("/");
+            } finally {
+                setLoading(false);
+            }
         };
 
         if (slug) {
@@ -41,8 +53,16 @@ export default function RestaurantDetail() {
 
     useEffect(() => {
         const fetchAvailability = async () => {
-            setSlotsAvailability(dummyAvailability);
-            setLoadingSlots(false);
+            if (!restaurant?._id || !selectedDate) return;
+            try {
+                setLoadingSlots(true);
+                const res = await api.get(`/restaurants/${restaurant._id}/availability?date=${selectedDate}`);
+                setSlotsAvailability(res.data.availability);
+            } catch (error: any) {
+                toast.error(error?.response?.data?.message || error?.message);
+            } finally {
+                setLoadingSlots(false);
+            }
         };
         fetchAvailability();
     }, [restaurant?._id, selectedDate]);
@@ -69,7 +89,7 @@ export default function RestaurantDetail() {
     };
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col pt-20">
+        <div className="flex flex-col min-h-screen pt-20 bg-surface">
             <Navbar />
             <AuthModal />
 
@@ -77,10 +97,10 @@ export default function RestaurantDetail() {
             <RestaurantHero restaurant={restaurant} />
 
             {/* Split Content Section */}
-            <main className="grow max-w-7xl w-full mx-auto px-6 md:px-10 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            <main className="w-full px-6 py-12 mx-auto grow max-w-7xl md:px-10">
+                <div className="grid items-start grid-cols-1 gap-12 lg:grid-cols-12">
                     {/* Left Column (Details, Menu, Reviews) */}
-                    <div className="lg:col-span-8 space-y-12">
+                    <div className="space-y-12 lg:col-span-8">
                         <RestaurantInfo restaurant={restaurant} />
                         <RestaurantReviews />
                     </div>

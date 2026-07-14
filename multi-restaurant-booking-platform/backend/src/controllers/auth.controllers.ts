@@ -142,10 +142,10 @@ export const loginUser = async (req: Request, res: Response) => {
 // get user profile
 // GET /api/auth/me
 // @acess Private
-export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getMe = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) {
-            res
+            return res
                 .status(401)
                 .json({
                     success: false,

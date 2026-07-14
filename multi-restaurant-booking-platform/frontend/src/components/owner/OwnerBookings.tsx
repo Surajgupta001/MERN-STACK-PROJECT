@@ -2,6 +2,7 @@
 import React from "react";
 import { Calendar, Users, Clock } from "lucide-react";
 import toast from "react-hot-toast";
+import api from "../../lib/api";
 
 interface OwnerBookingsProps {
     bookings: any[];
@@ -12,7 +13,10 @@ interface OwnerBookingsProps {
 export default function OwnerBookings({ bookings, setBookings, totalSeats }: OwnerBookingsProps) {
     const handleUpdateBookingStatus = async (bookingId: string, newStatus: string) => {
         try {
-            setBookings((prev) => prev.map((b) => (b._id === bookingId ? { ...b, status: newStatus } : b)));
+            await api.put(`/owner/bookings/${bookingId}/status`, { status: newStatus });
+            setBookings((prevBookings) =>
+                prevBookings.map((b) => (b._id === bookingId ? { ...b, status: newStatus } : b))
+            );
             toast.success(`Booking status updated to ${newStatus}`);
         } catch (error: any) {
             toast.error(error?.response?.data?.message || "Update status failed");
@@ -21,31 +25,31 @@ export default function OwnerBookings({ bookings, setBookings, totalSeats }: Own
 
     return (
         <div className="space-y-6 text-left">
-            <div className="flex justify-between items-center">
-                <h3 className="font-display text-lg font-medium text-primary">Active Reservations</h3>
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium font-display text-primary">Active Reservations</h3>
                 <span className="text-xs text-black/55">Total capacity: {totalSeats} seats</span>
             </div>
 
             {bookings.length === 0 ? (
-                <div className="bg-white border border-outline-variant/10 p-12 text-center rounded-md">
-                    <Calendar size={32} className="mx-auto text-outline-variant mb-2" />
-                    <p className="text-xs text-black/55 italic">No booking records found.</p>
+                <div className="p-12 text-center bg-white border rounded-md border-outline-variant/10">
+                    <Calendar size={32} className="mx-auto mb-2 text-outline-variant" />
+                    <p className="text-xs italic text-black/55">No booking records found.</p>
                 </div>
             ) : (
                 <div className="space-y-4">
                     {bookings.map((b) => (
                         <div
                             key={b._id}
-                            className="bg-white border border-outline-variant/20 rounded-md p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+                            className="flex flex-col items-start justify-between gap-6 p-6 bg-white border rounded-md shadow-sm border-outline-variant/20 md:flex-row md:items-center"
                         >
                             <div className="space-y-1.5 flex-1">
                                 <div className="flex items-center gap-3">
-                                    <h4 className="font-display text-base font-medium text-primary">{b.user?.name}</h4>
+                                    <h4 className="text-base font-medium font-display text-primary">{b.user?.name}</h4>
                                     <span className="text-[9px] text-black/50 border border-outline-variant/30 px-1.5 py-0.5">
                                         {b.bookingId}
                                     </span>
                                 </div>
-                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-black/55">
+                                <div className="flex flex-wrap items-center text-xs gap-x-4 gap-y-1 text-black/55">
                                     <span className="flex items-center gap-1">
                                         <Users size={12} /> {b.guests} Guests
                                     </span>
@@ -63,7 +67,7 @@ export default function OwnerBookings({ bookings, setBookings, totalSeats }: Own
                                 )}
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+                            <div className="flex flex-wrap items-center justify-end w-full gap-3 md:w-auto">
                                 <span
                                     className={`text-[9px] font-medium tracking-wider uppercase px-2 py-0.5 rounded-sm ${
                                         b.status === "confirmed"

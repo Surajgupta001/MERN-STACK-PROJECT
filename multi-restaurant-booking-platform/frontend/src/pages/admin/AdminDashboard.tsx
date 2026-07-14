@@ -9,7 +9,8 @@ import { ShieldCheckIcon, CheckCircleIcon, BarChart3Icon } from "lucide-react";
 // Subcomponents
 import AdminApprovals from "../../components/admin/AdminApprovals.tsx";
 import AdminStats from "../../components/admin/AdminStats.tsx";
-import { dummyAdminStats, dummyRestaurant } from "../../assets/assets.ts";
+import api from "../../lib/api.ts";
+import toast from "react-hot-toast";
 
 export default function AdminDashboard() {
     const { logout } = useAppContext();
@@ -20,14 +21,37 @@ export default function AdminDashboard() {
     const [btnLoading, setBtnLoading] = useState<string | null>(null);
 
     const fetchAdminData = async () => {
-        setRestaurants(dummyRestaurant);
-        setStats(dummyAdminStats);
-        setLoading(false);
+        try {
+            setLoading(true);
+            const rRes = await api.get('/admin/restaurants');
+            setRestaurants(rRes.data.restaurants);
+
+            const sRes = await api.get('/admin/stats');
+            setStats(sRes.data.stats);
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message || error?.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleApproveStatus = async (restaurantId: string, status: "approved" | "rejected") => {
-        console.log(restaurantId, status);
-        setBtnLoading(null);
+        try {
+            setBtnLoading(restaurantId);
+            await api.put(`/admin/restaurants/${restaurantId}/approve`, { status });
+            toast.success(`Restaurant has been marked as ${status.toUpperCase()}.`);
+
+            // Reload local list and stats
+            const rRes = await api.get('/admin/restaurants');
+            setRestaurants(rRes.data.restaurants);
+
+            const sRes = await api.get('/admin/stats');
+            setStats(sRes.data.stats);
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message || error?.message);
+        } finally {
+            setBtnLoading(null);
+        }
     };
 
     useEffect(() => {
@@ -43,14 +67,14 @@ export default function AdminDashboard() {
     const otherRestaurants = restaurants.filter((r) => r.status !== "pending");
 
     return (
-        <div className="min-h-screen bg-surface flex flex-col pt-20">
+        <div className="flex flex-col min-h-screen pt-20 bg-surface">
             <Navbar />
 
-            <main className="grow max-w-7xl w-full mx-auto px-6 md:px-10 py-12">
+            <main className="w-full px-6 py-12 mx-auto grow max-w-7xl md:px-10">
                 {/* Heading */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-outline-variant/10 pb-8 mb-8 text-left">
+                <div className="flex flex-col items-start justify-between gap-4 pb-8 mb-8 text-left border-b md:flex-row md:items-center border-outline-variant/10">
                     <div>
-                        <h1 className="font-display text-2xl md:text-3xl font-medium text-primary flex items-center gap-2">
+                        <h1 className="flex items-center gap-2 text-2xl font-medium font-display md:text-3xl text-primary">
                             <ShieldCheckIcon size={28} className="text-secondary" /> Admin Console
                         </h1>
                         <p className="text-xs text-black/55 mt-1.5">
@@ -65,24 +89,20 @@ export default function AdminDashboard() {
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
                     {/* Tab Navigation Sidebar */}
-                    <aside className="lg:col-span-3 space-y-6 bg-white border border-outline-variant/20 p-6 rounded-md shadow-sm h-fit">
+                    <aside className="p-6 space-y-6 bg-white border rounded-md shadow-sm lg:col-span-3 border-outline-variant/20 h-fit">
                         <nav className="flex flex-col gap-1.5">
                             <button
                                 onClick={() => setActiveTab("approvals")}
-                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-medium tracking-wider uppercase text-left rounded-sm cursor-pointer transition-colors ${
-                                    activeTab === "approvals" ? "bg-primary text-white" : "text-black/55 hover:bg-surface"
-                                }`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-medium tracking-wider uppercase text-left rounded-sm cursor-pointer transition-colors ${activeTab === "approvals" ? "bg-primary text-white" : "text-black/55 hover:bg-surface"}`}
                             >
                                 <CheckCircleIcon size={14} />
                                 Approvals ({pendingRestaurants.length} Pending)
                             </button>
                             <button
                                 onClick={() => setActiveTab("stats")}
-                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-medium tracking-wider uppercase text-left rounded-sm cursor-pointer transition-colors ${
-                                    activeTab === "stats" ? "bg-primary text-white" : "text-black/55 hover:bg-surface"
-                                }`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-medium tracking-wider uppercase text-left rounded-sm cursor-pointer transition-colors ${activeTab === "stats" ? "bg-primary text-white" : "text-black/55 hover:bg-surface"}`}
                             >
                                 <BarChart3Icon size={14} />
                                 Analytics & Stats
@@ -91,7 +111,7 @@ export default function AdminDashboard() {
                     </aside>
 
                     {/* Content Panel */}
-                    <div className="lg:col-span-9 space-y-8">
+                    <div className="space-y-8 lg:col-span-9">
                         {/* Tab 1: Restaurant Approvals */}
                         {activeTab === "approvals" && (
                             <AdminApprovals

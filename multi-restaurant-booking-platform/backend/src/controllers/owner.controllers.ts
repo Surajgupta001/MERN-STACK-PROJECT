@@ -8,28 +8,18 @@ import BookingModel from "../models/booking.models.js";
 // GET /api/v1/owner/restaurants
 export const getOwnerRestaurants = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const restaurants = await RestaurantModel.find({ owner: req.user?._id });
-
-        if (!restaurants) {
-            res
-                .status(404)
-                .json({
-                    success: false,
-                    message: 'No restaurants found for this owner'
-                });
-            return;
-        }
+        const restaurant = await RestaurantModel.findOne({ owner: req.user?._id });
 
         res
             .status(200)
             .json({
                 success: true,
-                messages: 'Owner restaurants fetched successfully',
-                restaurants
+                message: 'Owner restaurant fetched successfully',
+                restaurant
             });
 
     } catch (error: any) {
-        console.error('Error fetching owner restaurants:', error);
+        console.error('Error fetching owner restaurant:', error);
         res.status(500).json({
             success: false,
             message: error.message || 'Server Error'
@@ -67,7 +57,7 @@ export const createOwnerRestaurant = async (req: AuthRequest, res: Response): Pr
         }
 
         // Generate a unique slug for the restaurant
-        const slug = name.toLowerCase().replace()(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+        const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
 
         // check if the slug already exists
         const existingSlug = await RestaurantModel.findOne({ slug });
@@ -111,6 +101,8 @@ export const createOwnerRestaurant = async (req: AuthRequest, res: Response): Pr
             status: 'pending' // Set initial status to pending
         });
 
+        await newRestaurant.save();
+
         res
             .status(201)
             .json({
@@ -134,7 +126,7 @@ export const createOwnerRestaurant = async (req: AuthRequest, res: Response): Pr
 // PUT /api/v1/owner/restaurants/:id
 export const updateOwnerRestaurant = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const restaurant = await RestaurantModel.findById({ owner: req.user?._id });
+        const restaurant = await RestaurantModel.findOne({ owner: req.user?._id });
 
         if (!restaurant) {
             res
