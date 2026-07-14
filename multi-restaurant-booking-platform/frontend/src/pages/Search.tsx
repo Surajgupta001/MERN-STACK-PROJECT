@@ -124,7 +124,7 @@ export default function Search() {
             <div className="sticky z-10 py-4 bg-white border-b shadow-sm border-outline-variant/10 top-16">
                 <div className="flex flex-col items-center justify-between gap-4 px-6 mx-auto max-w-7xl md:px-10 md:flex-row">
                     <form onSubmit={handleTextSubmit} className="flex flex-wrap items-center w-full gap-3 md:w-auto">
-                        <div className="relative grow sm:grow-0 min-w-[200px]">
+                        <div className="relative grow sm:grow-0 min-w-50">
                             <SearchIcon size={16} className="absolute left-2.5 top-2 text-black/55/70" />
                             <input
                                 type="text"
@@ -134,7 +134,7 @@ export default function Search() {
                                 className="w-full py-2 pr-3 text-xs border rounded-md pl-9 border-outline-variant/40 focus:border-secondary focus:outline-none bg-surface-container-low/30"
                             />
                         </div>
-                        <div className="relative grow sm:grow-0 min-w-[200px]">
+                        <div className="relative grow sm:grow-0 min-w-50">
                             <MapPin size={16} className="absolute left-2.5 top-2 text-black/55/70" />
                             <input
                                 type="text"
