@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import LoginLeft from '../components/LoginLeft';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
+import { useAppContext } from '../context/AppContext';
 
 function AuthPage({ mode }) {
 
     const isLogin = mode === 'login';
+
+    const { login, register } = useAppContext();
+    const navigate = useNavigate();
 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -13,6 +17,25 @@ function AuthPage({ mode }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+        try {
+            if (mode === 'login') {
+                await login(email, password);
+            } else {
+                await register(name, email, password);
+            }
+            navigate("/");
+        } catch (err) {
+            setError(err.message || (mode === 'login' ? "Login failed. Please try again." : "Registration failed. Please try again."));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className='flex min-h-screen font-sans bg-white text-zinc-900'>
@@ -35,7 +58,7 @@ function AuthPage({ mode }) {
                             {error}
                         </div>
                     )}
-                    <form className='space-y-4'>
+                    <form className='space-y-4' onSubmit={handleSubmit}>
                         {isLogin && (
                             <div>
                                 <label className='block text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2'>Full Name</label>
