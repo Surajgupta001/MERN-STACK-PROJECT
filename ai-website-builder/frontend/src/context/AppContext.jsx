@@ -174,6 +174,10 @@ export function AppContextProvider({ children }) {
         }, [user]
     );
 
+    const handleChat = useCallback(
+        
+    );
+
     return (
         <AppContext.Provider value={{
             user,
@@ -194,7 +198,8 @@ export function AppContextProvider({ children }) {
             setShowCode,
             handleDelete,
             handleGenerate,
-            generatingProject
+            generatingProject,
+            handleChat
         }}>
             {children}
         </AppContext.Provider>
