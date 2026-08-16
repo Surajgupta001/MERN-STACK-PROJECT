@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import { AuthLayout, GuestLayout } from './pages/Layout'
 import PreviewPage from './pages/PreviewPage'
 import { Toaster } from 'react-hot-toast'
+import PublishPage from './pages/PublishPage'
 
 function App() {
   return (
@@ -23,6 +24,9 @@ function App() {
           <Route path='/builder/:id' element={<BuilderPage />} />
           <Route path='/preview/:id' element={<PreviewPage />} />
         </Route>
+
+        {/* Public Routes */}
+        <Route path='/publish/:id' element={<PublishPage />} />
 
         {/* Catch-all */}
         <Route path='*' element={<Navigate to='/' replace />} />
