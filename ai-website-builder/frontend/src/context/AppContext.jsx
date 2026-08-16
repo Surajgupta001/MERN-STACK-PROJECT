@@ -1,7 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import api from "../api/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import debounce from 'lodash.debounce'
 
 const AppContext = createContext(undefined);
 
@@ -37,7 +38,7 @@ export function AppContextProvider({ children }) {
 
     useEffect(() => {
         checkSession();
-    }, [checkSession]);
+    }, []);
 
     const login = async (emailAddress, password) => {
         try {
@@ -132,14 +133,14 @@ export function AppContextProvider({ children }) {
 
         const isOngoing = activeProject.status === 'generating' || activeProject.status === 'pending' || activeProject.status === 'revising';
 
-        if (!isOngoing) {
-            setChatLoading(false);
+        if (isOngoing) {
+            setChatLoading(true);
             const interval = setInterval(() => {
                 loadProject(activeProject._id, true);
             }, 2000);
             return () => clearInterval(interval);
         } else {
-            setChatLoading(true);
+            setChatLoading(false);
         }
     }, [activeProject?._id, activeProject?.status, loadProject, user]);
 
@@ -175,8 +176,50 @@ export function AppContextProvider({ children }) {
     );
 
     const handleChat = useCallback(
-        
+        async (prompt) => {
+            if (!user || !activeProject) return;
+            setChatLoading(true);
+
+            try {
+                const { data } = await api.post(`/api/projects/${activeProject._id}/chat`, { prompt });
+                setActiveProject(data);
+                if (data.errors && data.errors.length > 0) {
+                    toast.error(`${data.errors.length} revision patch(es) failed`);
+                } else {
+                    toast.success(`Updated to version ${data.version}`);
+                }
+            } catch (error) {
+                console.error('Revision request failed:', error);
+                toast.error(error?.response?.data?.message || "Revision request failed. Please try again.");
+            } finally {
+                setChatLoading(false);
+            }
+        }, [user, activeProject]
     );
+
+    const debounceSave = React.useMemo(
+        () => debounce(async (files, id) => {
+            try {
+                const { data } = await api.put(`/api/projects/${id}/files`, { files });
+            } catch (error) {
+                console.error('Failed to save files:', error);
+                toast.error("Failed to save files. Please try again.");
+            }
+        }, 1000), []
+    );
+
+    useEffect(() => {
+        return () => {
+            debounceSave.cancel();
+        }
+    }, [debounceSave]);
+
+    const updateProjectFiles = useCallback(
+        async (files) => {
+            if (!user || !activeProject) return;
+            debounceSave(files, activeProject._id);
+        }, [activeProject, user, debounceSave]
+    )
 
     return (
         <AppContext.Provider value={{
@@ -199,7 +242,8 @@ export function AppContextProvider({ children }) {
             handleDelete,
             handleGenerate,
             generatingProject,
-            handleChat
+            handleChat,
+            updateProjectFiles
         }}>
             {children}
         </AppContext.Provider>

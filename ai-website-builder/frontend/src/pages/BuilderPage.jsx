@@ -1,17 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAppContext } from "../context/AppContext";
-import Loading from "../components/Loading";
-import BuildHeader from "../components/BuildHeader";
 import { FolderTreeIcon, MessagesSquareIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../api/api";
+import AgentProgressDashboard from "../components/AgentProgressDashboard";
+import BuildHeader from "../components/BuildHeader";
 import ChatPanel from "../components/ChatPanel";
+import FileExplorer from "../components/FileExplorer";
+import Loading from "../components/Loading";
+import PreviewPanel from "../components/PreviewPanel";
+import PublishModal from "../components/PublishModal";
+import { useAppContext } from "../context/AppContext";
+import { exportProjectZip } from "../utils/exportProject";
 
 function BuilderPage() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [lefttab, setLeftTab] = useState("chat");
-    const [publish, setPublish] = useState(false);
+    const [leftTab, setLeftTab] = useState("chat");
+    const [publishing, setPublishing] = useState(false);
     const [publishUrl, setPublishUrl] = useState(null);
 
     const {
@@ -47,16 +54,29 @@ function BuilderPage() {
 
     const handleOpenPreview = () => {
         if (!id) return;
-
         window.open(`/preview/${id}`, "_blank");
     };
 
     const handlePublish = async () => {
-        // Handle publish here
+        if (!id) return;
+
+        setPublishing(true);
+        try {
+            await api.post(`/api/projects/${id}/publish`);
+            const url = `${window.location.origin}/publish/${id}`;
+            setPublishUrl(url);
+            toast.success("Project published successfully!");
+        } catch (error) {
+            setPublishing(false);
+            toast.error(error?.response?.data?.error || "Failed to publish project. Please try again.");
+        } finally {
+            setPublishing(false);
+        }
     };
 
     const handleDownload = () => {
-        // Handle download here
+        if (!activeProject) return;
+        exportProjectZip(activeProject)
     };
 
     if (loadingActiveProject || !activeProject) {
@@ -71,7 +91,7 @@ function BuilderPage() {
                 projectName={activeProject.name}
                 version={activeProject.version}
                 showCode={showCode}
-                publishing={publish}
+                publishing={publishing}
                 onToggleShowCode={() => setShowCode(!showCode)}
                 onOpenPreview={handleOpenPreview}
                 onPublish={handlePublish}
@@ -92,7 +112,7 @@ function BuilderPage() {
                         {/* Chat Tab */}
                         <button
                             onClick={() => setLeftTab("chat")}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium cursor-pointer transition-colors${lefttab === "chat" ? "text-zinc-900 border-b-2 border-zinc-900" : "text-zinc-400 hover:text-zinc-700"}`}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium cursor-pointer transition-colors${leftTab === "chat" ? "text-zinc-900 border-b-2 border-zinc-900" : "text-zinc-400 hover:text-zinc-700"}`}
                         >
                             <MessagesSquareIcon size={13} />
                             <span>Chat</span>
@@ -101,7 +121,7 @@ function BuilderPage() {
                         {/* Files Tab */}
                         <button
                             onClick={() => setLeftTab("files")}
-                            className={` flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium cursor-pointer transition-colors ${lefttab === "files" ? "text-zinc-900 border-b-2 border-zinc-900" : "text-zinc-400 hover:text-zinc-700"}`}
+                            className={` flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium cursor-pointer transition-colors ${leftTab === "files" ? "text-zinc-900 border-b-2 border-zinc-900" : "text-zinc-400 hover:text-zinc-700"}`}
                         >
                             <FolderTreeIcon size={13} />
                             <span>Files</span>
@@ -110,25 +130,35 @@ function BuilderPage() {
 
                     {/* Sidebar Content */}
                     <div className="flex-1 min-h-0 overflow-hidden">
-                        {lefttab === "chat" ? (
+                        {leftTab === "chat" ? (
                             <ChatPanel
                                 messages={activeProject.messages}
                                 onSend={handleChat}
                                 loading={chatLoading}
                             />
                         ) : (
-                            <div className="p-4 text-sm text-zinc-400">
-                                Files Panel
-                            </div>
+                            <FileExplorer
+                                files={activeProject.files}
+                                activeFile={activeFile}
+                                onFileSelect={(path) => {
+                                    setActiveFile(path);
+                                    setShowCode(true);
+                                }}
+                            />
                         )}
                     </div>
                 </aside>
 
                 {/* Right Code / Preview Area */}
-                <main className="flex-1 min-w-0 min-h-0 overflow-hidden bg-white">
-                    {/* Code / Preview will go here */}
-                </main>
+                <div className="flex-1 overflow-hidden">
+                    {activeProject.status === 'pending' || activeProject.status === 'generating' || activeProject.status === 'failed' ? (
+                        <AgentProgressDashboard project={activeFile} />
+                    ) : (
+                        <PreviewPanel project={activeProject} activeFile={activeFile} showCode={showCode} />
+                    )}
+                </div>
             </div>
+            {publishUrl && <PublishModal publishUrl={publishUrl} onClose={() => setPublishUrl(null)} />}
         </div>
     );
 }

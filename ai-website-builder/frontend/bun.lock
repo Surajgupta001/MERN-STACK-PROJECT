@@ -8,6 +8,7 @@
         "@codesandbox/sandpack-react": "^2.20.0",
         "@tailwindcss/vite": "^4.3.3",
         "axios": "^1.19.0",
+        "file-saver": "^2.0.5",
         "file-server": "^2.2.1",
         "jszip": "^3.10.1",
         "lodash.debounce": "^4.0.8",
@@ -270,6 +271,8 @@
     "ext": ["ext@1.7.0", "", { "dependencies": { "type": "^2.7.2" } }, "sha512-6hxeJYaL110a9b5TEJSj0gojyHQAmA2ch5Os+ySCiA1QGdS697XWY1pzsrSjqA9LDEEgdB/KypIlR59RcLuHYw=="],
 
     "fdir": ["fdir@6.5.0", "", { "peerDependencies": { "picomatch": "^3 || ^4" }, "optionalPeers": ["picomatch"] }, "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg=="],
+
+    "file-saver": ["file-saver@2.0.5", "", {}, "sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA=="],
 
     "file-server": ["file-server@2.2.1", "", { "dependencies": { "chokidar": "^3.5.3", "graceful-fs": "^4.2.10", "hashr": "^1.0.2", "kgo": "^4.0.3", "stream-catcher": "^1.0.5" } }, "sha512-4jB6eRgQgpe+UWvalSTwrwYlbgGPDd4ye9zA5yEe8XEliEcaZ/Fnjlzpbn2aptc7DSxkTeT+gYAueDPhEr/y7A=="],
 
