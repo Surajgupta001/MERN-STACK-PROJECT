@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Database Connection
-connectToDatabase();
+await connectToDatabase();
 
 app.use(cors({
     origin: process.env.ORIGINS.split(','),
