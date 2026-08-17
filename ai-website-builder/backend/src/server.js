@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import { connectToDatabase } from './config/database.js';
+import authRouter from './routes/auth.routes.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -21,6 +22,9 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('API Working 🚀');
 });
+
+// Custom API Routes
+app.use('/api/v1/auth', authRouter);
 
 // Global Error Handler
 app.use((err, _req, res, _next) => {
