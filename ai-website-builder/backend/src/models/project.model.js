@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const MessageSchema = new Schema({
     role: {
@@ -67,7 +67,7 @@ const ProjectSchema = new Schema({
         type: [PlannedFileSchema],
         default: [],
     },
-    fileGenerated: {
+    filesGenerated: {
         type: [String],
         default: [],
     },

@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import Project from "../models/project.model.js";
+import { generateProject } from "../services/ai.js";
 
 // Generate a short hash for file content
 function hashContent(content) {
@@ -90,6 +91,89 @@ export async function createProject(req, res) {
 // Background worker to progressively generate files
 export async function runBackgroundGeneration(projectId, prompt) {
     // AI generation logic will be implemented here
+    try {
+        console.log(`[Background AI] Starting generation for project ${projectId} with prompt: ${prompt}`);
+        const result = await generateProject(prompt, {
+            onPlan: async (plan) => {
+                console.log(`[Background AI] Project ${projectId} planning completed with ${plan.files.length} files.`);
+                await Project.findByIdAndUpdate(projectId, {
+                    status: "generating",
+                });
+                const fileList = plan.files.map((f) => `-\ ${f.path}\: ${f.description}`).join("\n");
+                await Project.findByIdAndUpdate(projectId, {
+                    name: plan.projectName || "Generated Project",
+                    status: "generating",
+                    filesPlanned: plan.files,
+                    $push: {
+                        messages: {
+                            role: "assistant",
+                            content: `Project planning completed. Planned files:\n${fileList}`,
+                            timestamp: new Date(),
+                        }
+                    }
+                });
+            },
+            onFileStart: async (path) => {
+                console.log(`[Background AI] Project ${projectId} started generating file: ${path}`);
+                await Project.findByIdAndUpdate(projectId, {
+                    currentFile: path,
+                })
+            },
+            onFileComplete: async (path, code) => {
+                console.log(`[Background AI] Project ${projectId} completed generating file: ${path}`);
+                const project = await Project.findById(projectId);
+
+                if (project) {
+                    project.files = project.files || {};
+                    project.files[path] = {
+                        content: code,
+                        hash: hashContent(code),
+                    },
+                        project.filesGenerated = [
+                            ...(project.filesGenerated || []),
+                            path,
+                        ];
+                    project.messages.push({
+                        role: "assistant",
+                        content: `File generated: ${path}`,
+                        timestamp: new Date(),
+                    });
+                    project.currentFile = null;
+                    project.markModified("files");
+                    await project.save();
+                }
+            }
+        });
+
+        console.log(`[Background AI] Project ${projectId} generation completed. Finalizing project...`);
+        const project = await Project.findById(projectId);
+        if (project) {
+            project.status = "completed";
+            project.version = 1;
+            if (result.description) {
+                project.name = result.description;
+            }
+            project.messages.push({
+                role: "assistant",
+                content: "Project generation completed successfully.",
+                timestamp: new Date(),
+            });
+            await project.save();
+        }
+    } catch (error) {
+        console.error(`[Background AI] Error generating project ${projectId}:`, error);
+        await Project.findByIdAndUpdate(projectId, {
+            status: "failed",
+            error: error.message,
+            $push: {
+                messages: {
+                    role: "assistant",
+                    content: `Project generation failed: ${error.message}`,
+                    timestamp: new Date(),
+                }
+            }
+        })
+    }
 }
 
 // GET /api/v1/projects
