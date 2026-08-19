@@ -5,14 +5,14 @@ import { applyOperations } from "../services/diff.js";
 export function buildManifest(files) {
     const manifest = [];
 
-    for (const element of object) {
+    for (const [path, entry] of Object.entries(files)) {
         manifest.push({
             path,
             hash: entry.hash,
             size: entry.content.length
         });
-        return manifest;
     }
+    return manifest;
 }
 
 // POST /api/projects/:id/chat
@@ -36,7 +36,7 @@ export async function chat(req, res) {
 
     const project = await Project.findOne({
         _id: req.params.id,
-        owner: req.user._id
+        owner: req.user.userId
     })
 
     if (!project) {
@@ -51,7 +51,7 @@ export async function chat(req, res) {
     project.messages.push({
         role: "user",
         content: prompt,
-        timespamp: new Date()
+        timestamp: new Date()
     });
 
     await project.save();
@@ -82,7 +82,7 @@ export async function chat(req, res) {
         // Apply operations to file map
         const { files: updatedFiles, applied, errors } = applyOperations(project.files, result.operations);
 
-        if (applied.length > 0) {
+        if (errors.length > 0) {
             console.warn(`[Diff] Errors applying operations:`, errors);
         }
 
@@ -104,6 +104,7 @@ export async function chat(req, res) {
         }
 
         res.json({
+            success: true,
             _id: project._id,
             name: project.name,
             description: project.description,
