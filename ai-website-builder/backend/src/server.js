@@ -4,6 +4,7 @@ import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import { connectToDatabase } from './config/database.js';
 import authRouter from './routes/auth.routes.js';
+import projectRouter from './routes/project.routes.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 
 // Custom API Routes
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/projects', projectRouter);
 
 // Global Error Handler
 app.use((err, _req, res, _next) => {
