@@ -1,10 +1,10 @@
 {
   "name": "backend",
-  "module": "server.js",
+  "module": "src/server.js",
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "node server.js",
+    "start": "node src/server.js",
     "server": "nodemon src/server.js"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import LoginLeft from '../components/LoginLeft';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
@@ -9,7 +9,6 @@ function AuthPage({ mode }) {
     const isLogin = mode === 'login';
 
     const { login, register } = useAppContext();
-    const navigate = useNavigate();
 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -29,7 +28,6 @@ function AuthPage({ mode }) {
             } else {
                 await register(name, email, password);
             }
-            navigate("/");
         } catch (err) {
             setError(err.message || (mode === 'login' ? "Login failed. Please try again." : "Registration failed. Please try again."));
         } finally {
@@ -59,7 +57,7 @@ function AuthPage({ mode }) {
                         </div>
                     )}
                     <form className='space-y-4' onSubmit={handleSubmit}>
-                        {isLogin && (
+                        {!isLogin && (
                             <div>
                                 <label className='block text-[11px] font-semibold text-zinc-400 uppercase tracking-widest mb-2'>Full Name</label>
                                 <input type="text" placeholder='John Doe...' value={name} onChange={(e) => setName(e.target.value)} required className='w-full py-2 pl-2 text-sm transition-colors bg-transparent border-b border-zinc-200 focus:outline-none focus:border-zinc-950 text-zinc-900 placeholder-zinc-300' />

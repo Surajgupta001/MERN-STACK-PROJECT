@@ -27,7 +27,7 @@ export function AppContextProvider({ children }) {
     // Auth Actions
     const checkSession = async () => {
         try {
-            const { data } = await api.get("/api/auth/me");
+            const { data } = await api.get("/auth/me");
             setUser(data.user);
         } catch (error) {
             setUser(null);
@@ -42,7 +42,7 @@ export function AppContextProvider({ children }) {
 
     const login = async (emailAddress, password) => {
         try {
-            const { data } = await api.post("/api/auth/login", { emailAddress, password });
+            const { data } = await api.post("/auth/login", { email: emailAddress, password });
             setUser(data.user);
             toast.success("Welcome back!");
             navigate("/");
@@ -56,7 +56,7 @@ export function AppContextProvider({ children }) {
 
     const register = async (name, emailAddress, password) => {
         try {
-            const { data } = await api.post("/api/auth/register", { name, emailAddress, password });
+            const { data } = await api.post("/auth/register", { name, email: emailAddress, password });
             setUser(data.user);
             toast.success("Account created successfully!");
             navigate("/");
@@ -70,7 +70,7 @@ export function AppContextProvider({ children }) {
 
     const logout = async () => {
         try {
-            await api.post("/api/auth/logout");
+            await api.post("/auth/logout");
             setUser(null);
             setProjects([]);
             setActiveProject(null);
@@ -88,8 +88,8 @@ export function AppContextProvider({ children }) {
     const loadProjects = async () => {
         if (!user) return;
         try {
-            const { data } = await api.get("/api/projects");
-            setProjects(data);
+            const { data } = await api.get("/projects");
+            setProjects(data.projects);
         } catch (error) {
             console.error('Projects error:', error);
             toast.error("Failed to load projects. Please try again.");
@@ -102,7 +102,7 @@ export function AppContextProvider({ children }) {
         if (!user) return;
         if (!silent) setLoadingActiveProject(true);
         try {
-            const { data } = await api.get(`/api/projects/${id}`);
+            const { data } = await api.get(`/projects/${id}`);
             setActiveProject(data);
 
             // Default file Selection
@@ -149,7 +149,7 @@ export function AppContextProvider({ children }) {
             if (!user) return;
             setGeneratingProject(true);
             try {
-                const { data } = await api.post("/api/projects", { prompt });
+                const { data } = await api.post("/projects", { prompt });
                 toast.success("AI Agent is planning structure....");
                 navigate(`/builder/${data._id}`);
             } catch (error) {
@@ -165,7 +165,7 @@ export function AppContextProvider({ children }) {
         async (id) => {
             if (!user) return;
             try {
-                await api.delete(`/api/projects/${id}`);
+                await api.delete(`/projects/${id}`);
                 setProjects((prev) => prev.filter((project) => project._id !== id));
                 toast.success("Project deleted successfully!");
             } catch (error) {
@@ -181,7 +181,7 @@ export function AppContextProvider({ children }) {
             setChatLoading(true);
 
             try {
-                const { data } = await api.post(`/api/projects/${activeProject._id}/chat`, { prompt });
+                const { data } = await api.post(`/projects/${activeProject._id}/chat`, { prompt });
                 setActiveProject(data);
                 if (data.errors && data.errors.length > 0) {
                     toast.error(`${data.errors.length} revision patch(es) failed`);
@@ -200,7 +200,7 @@ export function AppContextProvider({ children }) {
     const debounceSave = React.useMemo(
         () => debounce(async (files, id) => {
             try {
-                const { data } = await api.put(`/api/projects/${id}/files`, { files });
+                const { data } = await api.put(`/projects/${id}/files`, { files });
             } catch (error) {
                 console.error('Failed to save files:', error);
                 toast.error("Failed to save files. Please try again.");

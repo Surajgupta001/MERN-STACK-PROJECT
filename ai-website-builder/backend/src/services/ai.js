@@ -3,7 +3,6 @@ import { generateObject } from 'ai';
 import pMap from "p-map";
 import { FileCodeSchema, FilePlanSchema, RevisionResultSchema } from './aiSchemas.js';
 import { buildFileCodeSystem, FILE_PLAN_SYSTEM, REVISE_SYSTEM } from './prompts.js';
-import { el } from 'zod/v4/locales';
 import { normalizeContent } from './contentNormalizer.js';
 import { validateAndFixCode, validateRevisionContent } from './codeValidator.js';
 
@@ -142,14 +141,15 @@ export async function generateProject(prompt, callbacks) {
         console.error(`[AI] Failed to generate ${pendingFiles.length} files after all retry rounds: ${failedPaths}`);
 
         if (pendingFiles.some((f) => f.path === "/App.js")) {
-            const ext = file.path.split(".").pop()?.toLowerCase();
+            const appFile = pendingFiles.find((f) => f.path === "/App.js");
+            const ext = appFile.path.split(".").pop()?.toLowerCase();
 
             if (ext === "css") {
-                files[file.path] = `/* ${file.description} — Generation failed, please retry */\n`
+                files[appFile.path] = `/* ${appFile.description} — Generation failed, please retry */\n`
             } else {
-                files[file.path] = "import React from 'react';\n\n" +
+                files[appFile.path] = "import React from 'react';\n\n" +
                     `// ⚠️ This file could not be generated. Please retry.\n` +
-                    `// Purpose: ${file.description}\n\n` +
+                    `// Purpose: ${appFile.description}\n\n` +
                     "export default function Placeholder() {\n" +
                     "  return (\n" +
                     "    <div className='p-8 text-center text-zinc-400'>\n" +

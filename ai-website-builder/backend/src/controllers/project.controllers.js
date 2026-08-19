@@ -48,9 +48,9 @@ export async function createProject(req, res) {
             version: 0,
             owner: req.user.userId,
             status: "pending",
-            filesPlanned: [],
+            filePlanned: [],
             filesGenerated: [],
-            currentFiles: null,
+            currentFile: null,
         });
 
         // Start background generation
@@ -73,9 +73,9 @@ export async function createProject(req, res) {
             messages: project.messages,
             version: project.version,
             status: project.status,
-            filesPlanned: project.filesPlanned,
+            filePlanned: project.filePlanned,
             filesGenerated: project.filesGenerated,
-            currentFiles: project.currentFiles,
+            currentFile: project.currentFile,
             createdAt: project.createdAt,
         });
     } catch (error) {
@@ -103,7 +103,7 @@ export async function runBackgroundGeneration(projectId, prompt) {
                 await Project.findByIdAndUpdate(projectId, {
                     name: plan.projectName || "Generated Project",
                     status: "generating",
-                    filesPlanned: plan.files,
+                    filePlanned: plan.files,
                     $push: {
                         messages: {
                             role: "assistant",
@@ -254,9 +254,9 @@ export async function getProject(req, res) {
             messages: project.messages,
             version: project.version,
             status: project.status,
-            filesPlanned: project.filesPlanned,
+            filePlanned: project.filePlanned,
             filesGenerated: project.filesGenerated,
-            currentFiles: project.currentFiles,
+            currentFile: project.currentFile,
             published: project.published,
             createdAt: project.createdAt,
             updatedAt: project.updatedAt,
@@ -370,9 +370,9 @@ export async function updateProjectFiles(req, res) {
             messages: project.messages,
             version: project.version,
             status: project.status,
-            filesPlanned: project.filesPlanned,
+            filePlanned: project.filePlanned,
             filesGenerated: project.filesGenerated,
-            currentFiles: project.currentFiles,
+            currentFile: project.currentFile,
             createdAt: project.createdAt,
             updatedAt: project.updatedAt,
         });
