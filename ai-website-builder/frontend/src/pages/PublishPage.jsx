@@ -17,7 +17,7 @@ function PublishPage() {
 
         const fetchPublicProject = async () => {
             try {
-                const { data } = await api.get(`/api/projects/public/${id}`);
+                const { data } = await api.get(`/projects/public/${id}`);
                 setProject(data);
             } catch (error) {
                 console.error("Public project error:", error);

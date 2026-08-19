@@ -65,7 +65,7 @@ function HomePage() {
                                 key={i}
                                 onClick={() => handleGenerate(tag)}
                                 disabled={generatingProject}
-                                className='px-4 py-1.5 border rounded-full text-sm text-white/q0 border-white/25 hover:bg-white/20 transition cursor-pointer shrink-0 font-medium'
+                                className='px-4 py-1.5 border rounded-full text-sm text-white/80 border-white/25 hover:bg-white/20 transition cursor-pointer shrink-0 font-medium'
                             >
                                 {tag}
                             </button>
